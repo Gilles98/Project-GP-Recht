@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,7 +10,7 @@ namespace Project_Recht_DAL
 {
     public class RechtContext:DbContext
     {
-        public RechtContext(): base("ProjectRecht")
+        public RechtContext(): base("name=ProjectRecht")
         {
 
         }
@@ -26,7 +27,6 @@ namespace Project_Recht_DAL
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            
             base.OnModelCreating(modelBuilder);
 
             // vanwege Volgende cascade melding moet ik dit met fluent oplossen
@@ -34,6 +34,8 @@ namespace Project_Recht_DAL
             // Specify ON DELETE NO ACTION or ON UPDATE NO ACTION, or modify other FOREIGN KEY constraints.
             // Could not create constraint or index. See previous errors.
             modelBuilder.Entity<Rechter>().HasRequired(x => x.Rechtbank).WithMany().WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<Rechter>().HasRequired(x => x.Rechtbank).WithMany(x => x.Rechters).HasForeignKey(x => x.RechtbankID);
         }
     }
 }

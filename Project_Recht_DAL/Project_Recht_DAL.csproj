@@ -54,15 +54,12 @@
     <Compile Include="Aanklacht.cs" />
     <Compile Include="Aanklager.cs" />
     <Compile Include="Beklaagde.cs" />
+    <Compile Include="DatabaseInitializer.cs" />
     <Compile Include="Jury.cs" />
     <Compile Include="Jurylid.cs" />
-    <Compile Include="Migrations\202011061407370_InitialCreate.cs" />
-    <Compile Include="Migrations\202011061407370_InitialCreate.designer.cs">
-      <DependentUpon>202011061407370_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202011061414536_UpdateTables.cs" />
-    <Compile Include="Migrations\202011061414536_UpdateTables.designer.cs">
-      <DependentUpon>202011061414536_UpdateTables.cs</DependentUpon>
+    <Compile Include="Migrations\202011101114303_InitialCreate.cs" />
+    <Compile Include="Migrations\202011101114303_InitialCreate.designer.cs">
+      <DependentUpon>202011101114303_InitialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="RechtContext.cs" />
@@ -76,11 +73,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202011061407370_InitialCreate.resx">
-      <DependentUpon>202011061407370_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202011061414536_UpdateTables.resx">
-      <DependentUpon>202011061414536_UpdateTables.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202011101114303_InitialCreate.resx">
+      <DependentUpon>202011101114303_InitialCreate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

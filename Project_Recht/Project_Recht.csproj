@@ -105,6 +105,12 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Project_Recht_DAL\Project_Recht_DAL.csproj">
+      <Project>{87E9B807-F92D-4C23-AEDA-CDC3C288B8E6}</Project>
+      <Name>Project_Recht_DAL</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

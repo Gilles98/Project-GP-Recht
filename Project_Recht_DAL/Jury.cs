@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Project_Recht_DAL
 {
-    [Table("Jury's")]
+    [Table("Jurys")]
     public class Jury
     {
         public int JuryID { get; set; }

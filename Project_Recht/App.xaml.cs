@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Project_Recht_DAL;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,5 +14,13 @@ namespace Project_Recht
     /// </summary>
     public partial class App : Application
     {
+        private void Application_Startup(object sender, StartupEventArgs e)
+        {
+            DatabaseInitializer.InsertDB();
+            MainWindow w = new MainWindow();
+            w.Show();
+        }
+
+       
     }
 }

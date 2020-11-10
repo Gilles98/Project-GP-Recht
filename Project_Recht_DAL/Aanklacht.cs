@@ -29,6 +29,6 @@ namespace Project_Recht_DAL
         public Aanklager Aanklager { get; set; }
         public Beklaagde Beklaagde { get; set; }
 
-        public ICollection<Rechtzaak>Rechtzaken { get; set; }
+        public Rechtzaak Rechtzaak { get; set; }
     }
 }
