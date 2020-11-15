@@ -1,4 +1,5 @@
-﻿using Project_Recht_DAL;
+﻿using Project_Recht.ViewModels;
+using Project_Recht_DAL;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -16,9 +17,12 @@ namespace Project_Recht
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
+            //vanwege code in de methode zelf wordt deze niet telkens uitgevoerd
             DatabaseInitializer.InsertDB();
-            MainWindow w = new MainWindow();
-            w.Show();
+            StartView start = new StartView();
+            StartViewViewModel startView = new StartViewViewModel();
+            start.DataContext = startView;
+            start.Show();
         }
 
        

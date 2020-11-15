@@ -61,12 +61,20 @@
     <Compile Include="Migrations\202011101114303_InitialCreate.designer.cs">
       <DependentUpon>202011101114303_InitialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202011141856366_UpdateRechter.cs" />
+    <Compile Include="Migrations\202011141856366_UpdateRechter.designer.cs">
+      <DependentUpon>202011141856366_UpdateRechter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="RechtContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Rechtbank.cs" />
     <Compile Include="Rechter.cs" />
     <Compile Include="Rechtzaak.cs" />
+    <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Repositories\Repository.cs" />
+    <Compile Include="UnitOfWork\IUnitOfWork.cs" />
+    <Compile Include="UnitOfWork\UnitOfWork.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -75,6 +83,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202011101114303_InitialCreate.resx">
       <DependentUpon>202011101114303_InitialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202011141856366_UpdateRechter.resx">
+      <DependentUpon>202011141856366_UpdateRechter.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

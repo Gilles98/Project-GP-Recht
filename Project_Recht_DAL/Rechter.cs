@@ -24,5 +24,7 @@ namespace Project_Recht_DAL
 
         public Rechtbank Rechtbank { get; set; }
 
+        public ICollection<Rechtzaak> Rechtzaken { get; set; }
+
     }
 }

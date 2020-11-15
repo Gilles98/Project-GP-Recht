@@ -33,5 +33,10 @@ namespace Project_Recht_DAL
         
         public ICollection<Rechter> Rechters { get; set; }
         public ICollection<Rechtzaak>Rechtzaken { get; set; }
+
+        public override string ToString()
+        {
+            return Naam.ToString();
+        }
     }
 }

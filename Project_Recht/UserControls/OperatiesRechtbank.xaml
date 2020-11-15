@@ -1,0 +1,62 @@
+﻿<UserControl x:Class="Project_Recht.UserControls.OperatiesRechtbank"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Project_Recht.UserControls"
+             mc:Ignorable="d"  TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             TextElement.FontWeight="Regular"
+             TextElement.FontSize="13"
+             TextOptions.TextFormattingMode="Ideal"
+            TextOptions.TextRenderingMode="Auto"
+            FontFamily="{DynamicResource MaterialDesignFont}"
+             d:DesignHeight="300" d:DesignWidth="500" BorderBrush="Black" BorderThickness="1" Background="AntiqueWhite">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label Grid.Row="0" Grid.ColumnSpan="2" Content="Operaties Rechtbank" FontSize="38" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <TextBox  FontSize="14" Text="{Binding Rechtbank.Naam}"
+            Grid.Row="1" 
+            materialDesign:HintAssist.Hint="Naam"
+             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+             VerticalAlignment="Center" Height="45" Margin="108,9.8,9.6,5.2" RenderTransformOrigin="0.765,0.862"/>
+        <TextBox FontSize="14" Text="{Binding Rechtbank.Gemeente}"
+            Grid.Row="1"
+            materialDesign:HintAssist.Hint="Gemeente"
+             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+             VerticalAlignment="Center" Height="43" Margin="10.4,9.8,108.4,7.2" Grid.Column="1" />
+        <TextBox FontSize="14" Text="{Binding Rechtbank.Straat}"
+            Grid.Row="2"
+            materialDesign:HintAssist.Hint="Straat"
+             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+             VerticalAlignment="Center" Height="43" Margin="108,9.8,9.6,7.2" Grid.Column="0" />
+        <TextBox FontSize="14" Text="{Binding Rechtbank.HuisNr}"
+            Grid.Row="2"
+            materialDesign:HintAssist.Hint="Huisnummer"
+             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+             VerticalAlignment="Center" Height="43" Margin="10.4,9.8,108.4,7.2" Grid.Column="1" />
+        <TextBox FontSize="14" Text="{Binding Rechtbank.Postcode}"
+            Grid.Row="3"
+            materialDesign:HintAssist.Hint="Postcode"
+             Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+             VerticalAlignment="Center" Height="43" Margin="108,10,9.6,6.68" Grid.Column="0" />
+        <Grid Grid.Row="4" Grid.ColumnSpan="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Background="Navy" Grid.Column="0" Content="Verwijderen" Command="{Binding}" CommandParameter="Verwijderen"  Margin="5"/>
+            <Button Background="Navy" Grid.Column="1" Content="Bewaren" Command="{Binding}" CommandParameter="Bewaren"  Margin="5"/>
+        </Grid>
+    </Grid>
+</UserControl>

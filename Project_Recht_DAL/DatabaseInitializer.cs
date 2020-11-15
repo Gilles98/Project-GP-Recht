@@ -68,7 +68,7 @@ namespace Project_Recht_DAL
                     context.Beklaagdes.Add(new Beklaagde() { Voornaam = "Maria", Achternaam = "Van Denver", Gemeente = "Geel", Straat = "Acaciastraat", HuisNr = "5", Postcode = 2440 });
 
                     context.Aanklager.Add(new Aanklager() { Voornaam = "Danny", Achternaam = "Ronalds", Gemeente = "Geel", Straat = "Acaciastraat", HuisNr = "5", Postcode = 2440 });
-                    context.Aanklager.Add(new Aanklager() { Voornaam = "Mars", Achternaam = "Vankaster", Gemeente = "Berlaar", Straat = "Marialaan", HuisNr = "12", Postcode = 2500 });
+                    context.Aanklager.Add(new Aanklager() { Voornaam = "Mars", Achternaam = "Vankaster", Gemeente = "Berlaar", Straat = "Marialaan", HuisNr = "12", Postcode = 2590 });
                     context.SaveChanges();
                 }
 
