@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace Project_Recht.Service
 {
-    interface IDialogService
+    interface IDialog
     {
-        void ToonMessageBox(string message);
+        void ToonMessageBox(string bericht);
         bool ToonMessageBoxPlusReturnAntwoord(string message, string titel);
     }
 }

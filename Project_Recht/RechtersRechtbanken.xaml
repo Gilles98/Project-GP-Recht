@@ -31,7 +31,6 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition/>
-                <RowDefinition Height="50"/>
                 <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
             <local:ExtendedTreeView BorderThickness="0" Grid.ColumnSpan="2" Grid.Row="0" HorizontalAlignment="Stretch" ItemsSource="{Binding Tree}" SelectedItem_="{Binding TreeItem, Mode=TwoWay}">
@@ -39,8 +38,8 @@
             <Button Background="Blue" Height="50" Margin="5" Grid.Row="2" Command="{Binding}" CommandParameter="OperatiesRechter">
                 <TextBlock FontSize="12">Operaties<LineBreak/>rechter</TextBlock>
             </Button>
-            <Button Background="Blue" Height="50" Margin="5" Grid.Row="1" Command="{Binding}" Grid.ColumnSpan="2" Content="Refresh"  CommandParameter="RefreshTreeview"/>
-                <Button Background="Blue" Height="50" Margin="5" Grid.Row="2" Grid.Column="1" Command="{Binding}" CommandParameter="OperatiesRechtbank">
+           
+                <Button Background="Blue" Height="50" Margin="5" Grid.Row="1" Grid.Column="1" Command="{Binding}" CommandParameter="OperatiesRechtbank">
                 <TextBlock FontSize="12">Operaties<LineBreak/>rechtbank</TextBlock>
             </Button>
         </Grid>

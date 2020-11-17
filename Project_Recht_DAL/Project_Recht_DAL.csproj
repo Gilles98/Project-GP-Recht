@@ -55,6 +55,7 @@
     <Compile Include="Aanklager.cs" />
     <Compile Include="Beklaagde.cs" />
     <Compile Include="DatabaseInitializer.cs" />
+    <Compile Include="Foutlogger.cs" />
     <Compile Include="Jury.cs" />
     <Compile Include="Jurylid.cs" />
     <Compile Include="Migrations\202011101114303_InitialCreate.cs" />

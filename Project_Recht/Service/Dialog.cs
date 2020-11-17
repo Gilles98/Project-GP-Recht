@@ -7,14 +7,14 @@ using System.Windows;
 
 namespace Project_Recht.Service
 {
-    public class DialogService : IDialogService
+    public class Dialog: IDialog
     {
         public void ToonMessageBox(string bericht)
         {
             MessageBox.Show(bericht);
         }
 
-        public bool ToonMessageBoxPlusAntwoord(string bericht, string titel)
+        public bool ToonMessageBoxPlusReturnAntwoord(string bericht, string titel)
         {
             bool resultaat = false;
             if (MessageBox.Show(bericht, titel, MessageBoxButton.YesNo) == MessageBoxResult.Yes)

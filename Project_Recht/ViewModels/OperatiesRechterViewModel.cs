@@ -18,13 +18,15 @@ namespace Project_Recht.ViewModels
     {
         //private RechtersRechtbanken context = (RechtersRechtbanken)Application.Current.Windows[1];
         private Rechtbank _selectedRechtbank;
-        private IDialogService service = new DialogService();
         private ObservableCollection<Rechtbank> _rechtbanken;
         private Rechter _rechter;
+        private readonly Action action;
+        private Service.IDialog dialog = new Dialog();
         private IUnitOfWork Uow { get; set; }
         public string erd;
 
-        public override string this[string columnName] {
+        public override string this[string columnName]
+        {
 
             get
             {
@@ -39,14 +41,14 @@ namespace Project_Recht.ViewModels
 
                 return "";
             }
-        
+
         }
 
-        public Rechter Rechter 
-        { 
-            get 
-            { 
-                return _rechter; 
+        public Rechter Rechter
+        {
+            get
+            {
+                return _rechter;
             }
 
             set
@@ -56,9 +58,6 @@ namespace Project_Recht.ViewModels
             }
         }
 
-       
-
-        
         public Rechtbank SelectedRechtbank
         {
             get
@@ -86,29 +85,26 @@ namespace Project_Recht.ViewModels
             }
         }
 
-        public UserControl Control
-        {
-            get; set;
-        }
 
-        public OperatiesRechterViewModel(IUnitOfWork unitOfWork)
+        public OperatiesRechterViewModel(IUnitOfWork unitOfWork, Action parentAction)
         {
+            this.action = parentAction;
             Uow = unitOfWork;
             Rechter = new Rechter();
             Rechtbanken = new ObservableCollection<Rechtbank>(Uow.RechtbankRepo.Ophalen());
         }
 
-        public OperatiesRechterViewModel(int id, IUnitOfWork unitOfWork)
+        public OperatiesRechterViewModel(int id, IUnitOfWork unitOfWork, Action parentAction)
         {
-
+            this.action = parentAction;
             this.Uow = unitOfWork;
             Rechter = Uow.RechterRepo.ZoekOpPK(id);
             Rechtbanken = new ObservableCollection<Rechtbank>(Uow.RechtbankRepo.Ophalen());
             SelectedRechtbank = Uow.RechtbankRepo.Ophalen(x => x.RechtbankID == Rechter.RechtbankID).SingleOrDefault();
         }
-        
+
         public override bool CanExecute(object parameter)
-        {  
+        {
             return true;
         }
         public string FoutmeldingInstellen()
@@ -116,28 +112,32 @@ namespace Project_Recht.ViewModels
             string melding = "";
             if (SelectedRechtbank == null)
             {
-                
+
             }
             return melding;
         }
         public void Verwijderen()
         {
             ///controle doen of dat de rechter nog rechtzaken heeft!
-            
+
             if (Rechter.RechterID > 0)
             {
-                Uow.RechterRepo.Verwijderen(Rechter);
-                int ok = Uow.Save();
-
-                if (ok > 0)
+                if (dialog.ToonMessageBoxPlusReturnAntwoord("Deze rechter heeft mogelijk nog rechtzaken. Bent u zeker dat u hem wil verwijderen", "Melding"))
                 {
-                    Rechter = new Rechter();
-                    SelectedRechtbank = null;
-                    service.ToonMessageBox("De rechter is verwijderd!\nDruk op refresh om de treeview te updaten");
+                    Uow.RechterRepo.Verwijderen(Rechter);
+                    int ok = Uow.Save();
+
+
+                    if (ok > 0)
+                    {
+                        Rechter = new Rechter();
+                        SelectedRechtbank = null;
+                        action.Invoke();
+                    }
                 }
             }
 
-            
+
         }
         public void Bewaren()
         {
@@ -157,7 +157,7 @@ namespace Project_Recht.ViewModels
                             int ok = Uow.Save();
                             if (ok > 0)
                             {
-                                service.ToonMessageBox("Rechter is toegevoegd! \nDruk op de knop Refresh om de treeview te updaten");
+                                action.Invoke();
                             }
                         }
                     }
@@ -170,7 +170,7 @@ namespace Project_Recht.ViewModels
                 int ok = Uow.Save();
                 if (ok > 0)
                 {
-                    service.ToonMessageBox("Rechter is gewijzigd\nDruk op Refresh om de treeview te updaten");
+                    action.Invoke();
                 }
             }
         }
@@ -180,7 +180,7 @@ namespace Project_Recht.ViewModels
             switch (parameter.ToString())
             {
                 case "Bewaren":
-                     Bewaren();
+                    Bewaren();
                     break;
                 case "Verwijderen":
                     Verwijderen();

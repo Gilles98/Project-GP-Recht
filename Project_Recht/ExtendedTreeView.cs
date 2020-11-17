@@ -8,7 +8,7 @@ using System.Windows.Controls;
 
 namespace Project_Recht
 {
-    //100% van internet gehaald. op deze manier kan ik een treeview maken in de xaml waar er een optie is om een item te selecteren
+    // op deze manier kan ik een treeview maken in de xaml waar er een optie is om een item te selecteren
     //standaard lukte dit niet om deze te binden omdat er alleen maar via selectedvaluepath kon worden gewerkt
     //omdat selecteditem en selectedvalue alleen een getter hadden en geen setter dus de selectedvaluepath
     //was niet te gebruiken om een property van het type TreeViewItem op te vullen
@@ -19,10 +19,10 @@ namespace Project_Recht
         public ExtendedTreeView()
             : base()
         {
-            this.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(ICH);
+            this.SelectedItemChanged += new RoutedPropertyChangedEventHandler<object>(SetProperty);
         }
 
-        private void ICH(object sender, RoutedPropertyChangedEventArgs<object> e)
+        private void SetProperty(object sender, RoutedPropertyChangedEventArgs<object> e)
         {
             if (SelectedItem != null)
             {

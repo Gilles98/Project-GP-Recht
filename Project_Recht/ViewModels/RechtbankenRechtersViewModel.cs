@@ -104,40 +104,39 @@ namespace Project_Recht.ViewModels
             }
         }
 
-        //Ik geef de Uow mee door omdat ik anders een bug had bij het verwijderen van een item in zowel rechters als rechtbanken
-       
+        //Ik geef de UnitOfWork mee door omdat ik anders een bug had bij het verwijderen van een item in zowel rechters als rechtbanken
+
         public void OperatieOpenen(string keuze)
         {
             if (TreeItem.IsSelected)
             {
-                if (TreeItem.Name == "Rechtbank")
-                {
-                    Control = new OperatiesRechtbank();
-                    Control.DataContext = new OperatiesRechtbankViewModel((int)TreeItem.Tag, uow);
-                }
-                else
-                {
-                    Control = new OperatiesRechter();
-                    Control.DataContext = new OperatiesRechterViewModel((int)TreeItem.Tag, uow);
-                }
+                    if (TreeItem.Name == "Rechtbank")
+                    {
+                        Control = new OperatiesRechtbank();
+                        Control.DataContext = new OperatiesRechtbankViewModel((int)TreeItem.Tag, uow, UpdateBoom);
+                    }
+                    else
+                    {
+                        Control = new OperatiesRechter();
+                        Control.DataContext = new OperatiesRechterViewModel((int)TreeItem.Tag, uow, UpdateBoom);
+                    }
             }
             else
             {
                 if (keuze == "Rechtbank")
                 {
                     Control = new OperatiesRechtbank();
-                    Control.DataContext = new OperatiesRechtbankViewModel(uow);
+                    Control.DataContext = new OperatiesRechtbankViewModel(uow, UpdateBoom);
                 }
                 else
                 {
                     Control = new OperatiesRechter();
-                    Control.DataContext = new OperatiesRechterViewModel(uow);
+                    Control.DataContext = new OperatiesRechterViewModel(uow, UpdateBoom);
                 }
             }
             TreeItemHerinstellen();
 
         }
-
         public void UpdateBoom()
         {
             Tree = new ObservableCollection<TreeViewItem>();
@@ -166,9 +165,6 @@ namespace Project_Recht.ViewModels
                     break;
                 case "OperatiesRechtbank":
                     OperatieOpenen("Rechtbank");
-                    break;
-                case "RefreshTreeview":
-                    UpdateBoom();
                     break;
             }
         }

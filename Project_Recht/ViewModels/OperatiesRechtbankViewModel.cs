@@ -1,5 +1,4 @@
 ﻿using Project_Colruyt_WPF.ViewModels;
-using Project_Recht.Service;
 using Project_Recht_DAL;
 using Project_Recht_DAL.UnitOfWork;
 using System;
@@ -14,7 +13,8 @@ namespace Project_Recht.ViewModels
     public class OperatiesRechtbankViewModel : Basis
     {
         private Rechtbank _rechtbank;
-        private IDialogService service = new DialogService();
+        Service.IDialog dialog = new Service.Dialog();
+        private readonly Action action;
         private IUnitOfWork Uow { get; set; }
         public string erd;
 
@@ -52,15 +52,17 @@ namespace Project_Recht.ViewModels
         }
 
 
-        public OperatiesRechtbankViewModel(IUnitOfWork unitOfWork)
+        public OperatiesRechtbankViewModel(IUnitOfWork unitOfWork, Action parentAction)
         {
+            this.action = parentAction;
             Uow = unitOfWork;
             Rechtbank = new Rechtbank();
         }
 
-        public OperatiesRechtbankViewModel(int id, IUnitOfWork unitOfWork)
+        public OperatiesRechtbankViewModel(int id, IUnitOfWork unitOfWork, Action parentAction)
         {
 
+            this.action = parentAction;
             this.Uow = unitOfWork;
             Rechtbank = Uow.RechtbankRepo.ZoekOpPK(id);
         }
@@ -81,7 +83,7 @@ namespace Project_Recht.ViewModels
             {
                 if (Rechtbank.Rechters.Count > 0)
                 {
-                    if (service.ToonMessageBoxPlusReturnAntwoord("Deze rechtbank bevat nog rechters en rechtzaken, bent u zeker dat u deze wil verwijderen?", "Melding"))
+                    if (dialog.ToonMessageBoxPlusReturnAntwoord("Deze rechtbank bevat nog rechters en rechtzaken, bent u zeker dat u deze wil verwijderen?", "Melding"))
                     {
                         Uow.RechterRepo.VerwijderenRange(Rechtbank.Rechters);
                         Uow.RechtbankRepo.Verwijderen(Rechtbank);
@@ -89,7 +91,7 @@ namespace Project_Recht.ViewModels
                         if (ok > 0)
                         {
                             Rechtbank = new Rechtbank();
-                            service.ToonMessageBox("De rechtbank en al zijn gegevens zijn verwijderd. Druk op refresh om de treeview te updaten!");
+                            action.Invoke();
                         }
                     }
                 }
@@ -115,7 +117,7 @@ namespace Project_Recht.ViewModels
                         int ok = Uow.Save();
                         if (ok > 0)
                         {
-                            service.ToonMessageBox("Rechtbank is toegevoegd! \nDruk op de knop Refresh om de treeview te updaten");
+                            action.Invoke();
                         }
                     }
 
@@ -127,7 +129,7 @@ namespace Project_Recht.ViewModels
                 int ok = Uow.Save();
                 if (ok > 0)
                 {
-                    service.ToonMessageBox("Rechtbank is gewijzigd\nDruk op Refresh om de treeview te updaten");
+                    action.Invoke();
                 }
             }
         }
