@@ -24,7 +24,7 @@
         <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Background="Blue" >
             <TextBlock Text="Rechters en rechtbanken" FontSize="50" Background="Blue" Foreground="White" Margin="202,0,-0.4,0" />
         </StackPanel>
-        <Grid Grid.Row="1" Width="200">
+        <Grid Grid.Row="1" Width="200" Background="AntiqueWhite">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
@@ -33,7 +33,7 @@
                 <RowDefinition/>
                 <RowDefinition Height="70"/>
             </Grid.RowDefinitions>
-            <local:ExtendedTreeView BorderThickness="0" Grid.ColumnSpan="2" Grid.Row="0" HorizontalAlignment="Stretch" ItemsSource="{Binding Tree}" SelectedItem_="{Binding TreeItem, Mode=TwoWay}">
+            <local:ExtendedTreeView BorderThickness="0" Grid.ColumnSpan="2" Grid.Row="0" HorizontalAlignment="Stretch" Background="AntiqueWhite" ItemsSource="{Binding Tree}" SelectedItem_="{Binding TreeItem, Mode=TwoWay}">
             </local:ExtendedTreeView>
             <Button Background="Blue" Height="50" Margin="5" Grid.Row="2" Command="{Binding}" CommandParameter="OperatiesRechter">
                 <TextBlock FontSize="12">Operaties<LineBreak/>rechter</TextBlock>

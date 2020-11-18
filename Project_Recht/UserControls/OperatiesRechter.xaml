@@ -12,7 +12,7 @@
      TextOptions.TextFormattingMode="Ideal"
      TextOptions.TextRenderingMode="Auto"
      FontFamily="{DynamicResource MaterialDesignFont}"
-             d:DesignHeight="300" d:DesignWidth="500" BorderBrush="Black" BorderThickness="1" Background="AntiqueWhite">
+             d:DesignHeight="300" d:DesignWidth="500" BorderBrush="Black" BorderThickness="1" Background="White">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -25,18 +25,18 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
         <Label Grid.Row="0" Grid.ColumnSpan="2" Content="Operaties Rechter" FontSize="38" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBox  FontSize="14" Text="{Binding Rechter.Voornaam, ValidatesOnDataErrors=True}"
+        <TextBox  FontSize="14" Text="{Binding Voornaam, ValidatesOnDataErrors=True}"
             Grid.Row="1" 
             materialDesign:HintAssist.Hint="Voornaam"
              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
              VerticalAlignment="Center" Height="45" Margin="108,19.8,9.6,9.6" RenderTransformOrigin="0.765,0.862" />
-        <TextBox FontSize="14" Text="{Binding Rechter.Achternaam, ValidatesOnDataErrors=True}"
+        <TextBox FontSize="14" Text="{Binding Achternaam, ValidatesOnDataErrors=True}"
             Grid.Row="1"
             materialDesign:HintAssist.Hint="Achternaam"
              Style="{StaticResource MaterialDesignFloatingHintTextBox}"
              VerticalAlignment="Center" Height="43" Margin="10.4,21.8,108.4,9.6" Grid.Column="1" />
         <StackPanel Grid.Row="2" Grid.ColumnSpan="2">
-            <ComboBox Background="White" Height="31" Margin="108,41,108.4,41" materialDesign:HintAssist.Hint="Selecteer een rechtbank" BorderThickness="1" SelectedItem="{Binding SelectedRechtbank}" ItemsSource="{Binding Rechtbanken}"/>
+            <ComboBox Background="White" Height="31" Margin="108,41,108.4,41" materialDesign:HintAssist.Hint="Selecteer een rechtbank" BorderThickness="1" SelectedItem="{Binding SelectedRechtbank, ValidatesOnDataErrors=True}" ItemsSource="{Binding Rechtbanken}"/>
         </StackPanel>
         <Grid Grid.Row="3" Grid.ColumnSpan="2">
             <Grid.ColumnDefinitions>

@@ -18,23 +18,148 @@ namespace Project_Recht.ViewModels
         private IUnitOfWork Uow { get; set; }
         public string erd;
 
+        private string _naam;
+        private string _gemeente;
+        private string _straat;
+        private string _huisnummer;
+        private int _postcode;
         public override string this[string columnName]
         {
 
             get
             {
-                //if (Rechter.Voornaam == null)
-                //{
-                //    return "De voornaam van een rechter mag niet een numeriek getal zijn";
-                //}
-                //if (Rechter.Achternaam == null)
-                //{
-                //    return "De achternaam van een rechter mag niet een numeriek getal zijn";
-                //}
+                try
+                {
+                    if (columnName == "Postcode" && Postcode == 0)
+                    {
+                        return "* Geef de postcode in";
+                    }
+                    if (columnName == "Postcode" && Postcode < 1000 || Postcode > 9999)
+                    {
+                        return "* Een postcode ligt tussen 1000 en 9999";
+                    }
+
+                    var lijst = this.GetType().GetProperties().ToList();
+                    
+                    for (int i = 0; i <= lijst.Count -1; i++)
+                    {
+                        if (lijst[i].Name == "Item")
+                        {
+                            lijst.Remove(lijst[i]);
+                        }
+                        if (lijst[i].Name == columnName && lijst[i].GetValue(this, null) == null || (string)lijst[i].GetValue(this, null) == "")
+                        {
+                            return "* Verplicht veld";
+                        }
+                        
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    Foutlogger.FoutLoggen(ex);
+                }
+
+               
 
                 return "";
             }
 
+        }
+
+        public string Naam
+        {
+            get
+            {
+                return _naam;
+            }
+            set
+            {
+                _naam = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public string Gemeente
+        {
+            get
+            {
+                return _gemeente;
+            }
+            set
+            {
+                _gemeente = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public string Straat
+        {
+            get
+            {
+                return _straat;
+            }
+            set
+            {
+                _straat = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+
+        public string Huisnummer
+        {
+            get
+            {
+                return _huisnummer;
+            }
+            set
+            {
+                _huisnummer = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public int Postcode
+        {
+            get
+            {
+                return _postcode;
+            }
+            set
+            {
+                _postcode = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public void RechtbankInstellen()
+        {
+            Rechtbank = new Rechtbank();
+            Rechtbank.Naam = Naam;
+            Rechtbank.HuisNr = Huisnummer;
+            Rechtbank.Postcode = Postcode;
+            Rechtbank.Straat = Straat;
+            Rechtbank.Gemeente = Gemeente;
+        }
+
+        public void Reset()
+        {
+            Rechtbank = new Rechtbank();
+            Naam = null;
+            Huisnummer = null;
+            Postcode = 0;
+            Straat = null;
+            Gemeente = null;
+        }
+
+        public void PropertiesInstellen()
+        {
+            Naam = Rechtbank.Naam;
+            Huisnummer = Rechtbank.HuisNr;
+            Postcode = Rechtbank.Postcode;
+            Straat = Rechtbank.Straat;
+            Gemeente = Rechtbank.Gemeente;
         }
 
         public Rechtbank Rechtbank
@@ -56,7 +181,6 @@ namespace Project_Recht.ViewModels
         {
             this.action = parentAction;
             Uow = unitOfWork;
-            Rechtbank = new Rechtbank();
         }
 
         public OperatiesRechtbankViewModel(int id, IUnitOfWork unitOfWork, Action parentAction)
@@ -65,6 +189,7 @@ namespace Project_Recht.ViewModels
             this.action = parentAction;
             this.Uow = unitOfWork;
             Rechtbank = Uow.RechtbankRepo.ZoekOpPK(id);
+            PropertiesInstellen();
         }
 
         public override bool CanExecute(object parameter)
@@ -77,7 +202,7 @@ namespace Project_Recht.ViewModels
         //}
         public void Verwijderen()
         {
-            ///controle doen of dat de rechtbank nog rechtzaken heeft en rechters!
+           
 
             if (Rechtbank.RechtbankID > 0)
             {
@@ -87,27 +212,38 @@ namespace Project_Recht.ViewModels
                     {
                         Uow.RechterRepo.VerwijderenRange(Rechtbank.Rechters);
                         Uow.RechtbankRepo.Verwijderen(Rechtbank);
+    
                         int ok = Uow.Save();
                         if (ok > 0)
                         {
-                            Rechtbank = new Rechtbank();
                             action.Invoke();
                         }
                     }
                 }
-                
-
-              
+                else
+                {
+                    Uow.RechtbankRepo.Verwijderen(Rechtbank);
+                    int ok = Uow.Save();
+                    if (ok > 0)
+                    {
+                       
+                        action.Invoke();
+                    }
+                }    
             }
-
+            Reset();
 
         }
         public void Bewaren()
         {
-
-            //validatie extra toevoegen
-            if (Rechtbank.RechtbankID <= 0)
+            if (this.IsGeldig())
             {
+
+
+                RechtbankInstellen();
+                if (Rechtbank.RechtbankID <= 0)
+            {
+                
 
                 if (Rechtbank.Naam != "")
                 {
@@ -131,6 +267,7 @@ namespace Project_Recht.ViewModels
                 {
                     action.Invoke();
                 }
+            }
             }
         }
 

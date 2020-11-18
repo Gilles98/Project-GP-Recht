@@ -22,6 +22,11 @@ namespace Project_Recht.ViewModels
         private Rechter _rechter;
         private readonly Action action;
         private Service.IDialog dialog = new Dialog();
+
+
+        private string _voornaam;
+        private string _achternaam;
+
         private IUnitOfWork Uow { get; set; }
         public string erd;
 
@@ -30,20 +35,66 @@ namespace Project_Recht.ViewModels
 
             get
             {
-                //if (Rechter.Voornaam == null)
-                //{
-                //    return "De voornaam van een rechter mag niet een numeriek getal zijn";
-                //}
-                //if (Rechter.Achternaam == null)
-                //{
-                //    return "De achternaam van een rechter mag niet een numeriek getal zijn";
-                //}
+                try
+                {
+
+                    var lijst = this.GetType().GetProperties().ToList();
+                    
+                    for (int i = 0; i <= lijst.Count - 1; i++)
+                    {
+                        if (lijst[i].Name == "Item")
+                        {
+                            ///de proportynaam van de klasse niet laten meetellen
+                            lijst.Remove(lijst[i]);
+                        }
+                        if (lijst[i].Name == columnName && lijst[i].GetValue(this, null) == null || (string)lijst[i].GetValue(this, null) == "")
+                        {
+                            return "* Verplicht veld";
+                        }
+                    }
+                }
+
+                catch (Exception ex)
+                {
+                    Foutlogger.FoutLoggen(ex);
+                }
+                if (columnName =="SelectedRechtbank" && SelectedRechtbank == null)
+                {
+                    return "* Selecteer een rechtbank";
+                }
 
                 return "";
             }
 
         }
 
+
+      
+        public string Voornaam
+        {
+            get
+            {
+                return _voornaam;
+            }
+            set
+            {
+                _voornaam = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public string Achternaam
+        {
+            get
+            {
+                return _achternaam;
+            }
+            set
+            {
+                _achternaam = value;
+                NotifyPropertyChanged();
+            }
+        }
         public Rechter Rechter
         {
             get
@@ -100,21 +151,36 @@ namespace Project_Recht.ViewModels
             this.Uow = unitOfWork;
             Rechter = Uow.RechterRepo.ZoekOpPK(id);
             Rechtbanken = new ObservableCollection<Rechtbank>(Uow.RechtbankRepo.Ophalen());
+            PropertiesInstellen();
+        }
+
+
+        public void RechterInstellen()
+        {
+            Rechter.Voornaam = Voornaam;
+            Rechter.Achternaam = Achternaam;
+            Rechter.RechtbankID = SelectedRechtbank.RechtbankID;
+        }
+
+        public void Reset()
+        {
+            SelectedRechtbank = null;
+            Voornaam = "";
+            Achternaam = "";
+            Rechter = new Rechter();
+        }
+
+        public void PropertiesInstellen()
+        {
+            Voornaam = Rechter.Voornaam;
+            Achternaam = Rechter.Achternaam;
             SelectedRechtbank = Uow.RechtbankRepo.Ophalen(x => x.RechtbankID == Rechter.RechtbankID).SingleOrDefault();
+          
         }
 
         public override bool CanExecute(object parameter)
         {
             return true;
-        }
-        public string FoutmeldingInstellen()
-        {
-            string melding = "";
-            if (SelectedRechtbank == null)
-            {
-
-            }
-            return melding;
         }
         public void Verwijderen()
         {
@@ -130,8 +196,8 @@ namespace Project_Recht.ViewModels
 
                     if (ok > 0)
                     {
-                        Rechter = new Rechter();
-                        SelectedRechtbank = null;
+
+                        Reset();
                         action.Invoke();
                     }
                 }
@@ -141,7 +207,10 @@ namespace Project_Recht.ViewModels
         }
         public void Bewaren()
         {
-
+            if (this.IsGeldig())
+            {
+                RechterInstellen();
+          
 
             if (Rechter.RechterID <= 0)
             {
@@ -165,13 +234,13 @@ namespace Project_Recht.ViewModels
             }
             else
             {
-                Rechter.RechtbankID = SelectedRechtbank.RechtbankID;
                 Uow.RechterRepo.Aanpassen(Rechter);
                 int ok = Uow.Save();
                 if (ok > 0)
                 {
                     action.Invoke();
                 }
+            }
             }
         }
 

@@ -13,7 +13,7 @@
 
             FontFamily="{DynamicResource MaterialDesignFont}"
              mc:Ignorable="d" 
-             d:DesignHeight="450" d:DesignWidth="800" Background="AntiqueWhite" BorderBrush="Black" BorderThickness="1">
+             d:DesignHeight="450" d:DesignWidth="800" Background="White" BorderBrush="Black" BorderThickness="1">
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
         <Label FontSize="20" Margin="5" Content="Selecteer een rechtbank of rechter of druk op een knop"/>
         <Label Margin="5" FontSize="14" Content="Je kan een item wijzigen/verwijderen bij het selecteren van het item"/>
