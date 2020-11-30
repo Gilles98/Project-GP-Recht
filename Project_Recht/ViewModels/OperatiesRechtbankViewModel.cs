@@ -1,4 +1,5 @@
-﻿using Project_Colruyt_WPF.ViewModels;
+﻿
+using Project_Recht.Service;
 using Project_Recht_DAL;
 using Project_Recht_DAL.UnitOfWork;
 using System;
@@ -14,7 +15,7 @@ namespace Project_Recht.ViewModels
     {
         private Rechtbank _rechtbank;
         Service.IDialog dialog = new Service.Dialog();
-        private readonly Action action;
+        private readonly ITreeUpdate action;
         private IUnitOfWork Uow { get; set; }
         public string erd;
 
@@ -43,7 +44,7 @@ namespace Project_Recht.ViewModels
                     
                     for (int i = 0; i <= lijst.Count -1; i++)
                     {
-                        if (lijst[i].Name == "Item")
+                        if (lijst[i].Name == "Item" )
                         {
                             lijst.Remove(lijst[i]);
                         }
@@ -177,13 +178,13 @@ namespace Project_Recht.ViewModels
         }
 
 
-        public OperatiesRechtbankViewModel(IUnitOfWork unitOfWork, Action parentAction)
+        public OperatiesRechtbankViewModel(IUnitOfWork unitOfWork, ITreeUpdate parentAction)
         {
             this.action = parentAction;
             Uow = unitOfWork;
         }
 
-        public OperatiesRechtbankViewModel(int id, IUnitOfWork unitOfWork, Action parentAction)
+        public OperatiesRechtbankViewModel(int id, IUnitOfWork unitOfWork, ITreeUpdate parentAction)
         {
 
             this.action = parentAction;
@@ -216,7 +217,7 @@ namespace Project_Recht.ViewModels
                         int ok = Uow.Save();
                         if (ok > 0)
                         {
-                            action.Invoke();
+                            action.Update();
                         }
                     }
                 }
@@ -227,7 +228,7 @@ namespace Project_Recht.ViewModels
                     if (ok > 0)
                     {
                        
-                        action.Invoke();
+                        action.Update();
                     }
                 }    
             }
@@ -253,7 +254,7 @@ namespace Project_Recht.ViewModels
                         int ok = Uow.Save();
                         if (ok > 0)
                         {
-                            action.Invoke();
+                            action.Update();
                         }
                     }
 
@@ -265,7 +266,7 @@ namespace Project_Recht.ViewModels
                 int ok = Uow.Save();
                 if (ok > 0)
                 {
-                    action.Invoke();
+                    action.Update();
                 }
             }
             }

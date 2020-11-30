@@ -15,11 +15,11 @@ using System.Windows.Shapes;
 namespace Project_Recht
 {
     /// <summary>
-    /// Interaction logic for RechtersRechtbanken.xaml
+    /// Interaction logic for RechtzaakBeheren.xaml
     /// </summary>
-    public partial class RechtersRechtbanken : Window
+    public partial class RechtzaakBeheren : Window
     {
-        public RechtersRechtbanken()
+        public RechtzaakBeheren()
         {
             InitializeComponent();
         }

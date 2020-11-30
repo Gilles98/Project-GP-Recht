@@ -1,4 +1,4 @@
-﻿using Project_Colruyt_WPF.ViewModels;
+﻿
 using Project_Recht_DAL;
 using System;
 using System.Collections.Generic;
@@ -14,20 +14,20 @@ namespace Project_Recht.ViewModels
 
         public override string this[string columnName] => throw new NotImplementedException();
 
-        public void OpenControl()
+        public void OpenRechtzakenBeheren()
         {
-            //MainWindow view = new MainWindow();
-            //RechtzakenBeherenViewModel viewModel = new RechtzakenBeherenViewModel();
-            //view.DataContext = viewModel;
-            //view.ShowDialog();
+            ViewUserControl view = new ViewUserControl();
+
+            RechtzakenBeherenViewModel viewModel = new RechtzakenBeherenViewModel();
+            view.DataContext = viewModel;
+            view.ShowDialog();
         }
 
 
 
         public void OpenRechtbanken()
         {
-            //was de mainwindow eerst.
-            RechtersRechtbanken view = new RechtersRechtbanken();
+            ViewUserControl view = new ViewUserControl();
 
             RechtbankenRechtersViewModel viewModel = new RechtbankenRechtersViewModel();
             view.DataContext = viewModel;
@@ -44,7 +44,7 @@ namespace Project_Recht.ViewModels
             switch (parameter.ToString())
             {
                 case "Rechtzaken":
-                    OpenControl();
+                    OpenRechtzakenBeheren();
                     break;
                 case "RechtersRechtbanken":
                     OpenRechtbanken();

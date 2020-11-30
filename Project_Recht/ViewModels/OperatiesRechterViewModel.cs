@@ -1,4 +1,4 @@
-﻿using Project_Colruyt_WPF.ViewModels;
+﻿
 using Project_Recht.Service;
 using Project_Recht.UserControls;
 using Project_Recht_DAL;
@@ -42,12 +42,12 @@ namespace Project_Recht.ViewModels
                     
                     for (int i = 0; i <= lijst.Count - 1; i++)
                     {
-                        if (lijst[i].Name == "Item")
+                        if (lijst[i].Name == "Item" || lijst[i].Name == "SelectedRechtbank")
                         {
-                            ///de proportynaam van de klasse niet laten meetellen
+                            ///item wordt mee gegenereerd dus deze wordt gefilterd net zoals SelectedRechtbank om daar geen verwarring in te krijgen
                             lijst.Remove(lijst[i]);
                         }
-                        if (lijst[i].Name == columnName && lijst[i].GetValue(this, null) == null || (string)lijst[i].GetValue(this, null) == "")
+                        if (lijst[i].Name == columnName && lijst[i].GetValue(this, null) == null || (string)lijst[i].GetValue(this, null)== "")
                         {
                             return "* Verplicht veld";
                         }
@@ -188,7 +188,7 @@ namespace Project_Recht.ViewModels
 
             if (Rechter.RechterID > 0)
             {
-                if (dialog.ToonMessageBoxPlusReturnAntwoord("Deze rechter heeft mogelijk nog rechtzaken. Bent u zeker dat u hem wil verwijderen", "Melding"))
+                if (dialog.ToonMessageBoxPlusReturnAntwoord("Deze rechter heeft mogelijk nog rechtzaken. Bent u zeker dat u hem wil verwijderen?", "Melding"))
                 {
                     Uow.RechterRepo.Verwijderen(Rechter);
                     int ok = Uow.Save();

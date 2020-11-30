@@ -1,4 +1,5 @@
-﻿using Project_Colruyt_WPF.ViewModels;
+﻿
+using Project_Recht.Service;
 using Project_Recht.UserControls;
 using Project_Recht_DAL;
 using Project_Recht_DAL.UnitOfWork;
@@ -22,6 +23,7 @@ namespace Project_Recht.ViewModels
         private ObservableCollection<TreeViewItem> _tree;
         private TreeViewItem _treeItem;
 
+
         public TreeViewItem TreeItem
         {
             get
@@ -36,6 +38,11 @@ namespace Project_Recht.ViewModels
             }
         }
         public string Title { get; set; }
+        public string Command1 => "Operaties\nRechter";
+
+        public string Command2 => "Operaties\nRechtbank";
+
+
 
         public UserControl Control
         {
@@ -87,7 +94,6 @@ namespace Project_Recht.ViewModels
             Rechtbanken = new ObservableCollection<Rechtbank>(uow.RechtbankRepo.Ophalen(x => x.Rechters));
             IntroRechtbankenEnRechters intro = new IntroRechtbankenEnRechters();
             Control = intro;
-
         }
 
         //gaat de lijst van Tree opvullen met treeviewitems
@@ -104,16 +110,18 @@ namespace Project_Recht.ViewModels
             }
         }
 
-        //Ik geef de UnitOfWork mee door omdat ik anders een bug had bij het verwijderen van een item in zowel rechters als rechtbanken
 
         public void OperatieOpenen(string keuze)
         {
+            ITreeUpdate update = new TreeUpdate();
+            update.UpdateTree += UpdateBoom;
             if (TreeItem.IsSelected)
             {
+                    
                     if (TreeItem.Name == "Rechtbank")
                     {
                         Control = new OperatiesRechtbank();
-                        Control.DataContext = new OperatiesRechtbankViewModel((int)TreeItem.Tag, uow, UpdateBoom);
+                        Control.DataContext = new OperatiesRechtbankViewModel((int)TreeItem.Tag, uow, update);
                     }
                     else
                     {
@@ -126,7 +134,7 @@ namespace Project_Recht.ViewModels
                 if (keuze == "Rechtbank")
                 {
                     Control = new OperatiesRechtbank();
-                    Control.DataContext = new OperatiesRechtbankViewModel(uow, UpdateBoom);
+                    Control.DataContext = new OperatiesRechtbankViewModel(uow, update);
                 }
                 else
                 {
@@ -158,14 +166,14 @@ namespace Project_Recht.ViewModels
 
         public override void Execute(object parameter)
         {
-            switch (parameter.ToString())
+            if (parameter.ToString() == Command1)
             {
-                case "OperatiesRechter":
-                    OperatieOpenen("Rechter");
-                    break;
-                case "OperatiesRechtbank":
-                    OperatieOpenen("Rechtbank");
-                    break;
+                OperatieOpenen("Rechter");
+            }
+
+            else
+            {
+                OperatieOpenen("Rechtbank");
             }
         }
     }

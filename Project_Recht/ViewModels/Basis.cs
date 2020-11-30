@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace Project_Colruyt_WPF.ViewModels
+namespace Project_Recht.ViewModels
 {
     public abstract class Basis: IDataErrorInfo, INotifyPropertyChanged, ICommand
     {
