@@ -1,0 +1,5 @@
+Lees eerst de comment in de rechtcontext modelbuilder!
+
+Daardoor zal ik meerdere cascades zelf moeten uitvoeren!
+
+overal waar ik dit doe zal ik dit vermelden uiteraard na dat ik heb getest of deze automatisch toch zou cascaden.

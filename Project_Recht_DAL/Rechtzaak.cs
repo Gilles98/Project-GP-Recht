@@ -18,6 +18,8 @@ namespace Project_Recht_DAL
 
         public int RechtbankID { get; set; }
 
+        public string OmschrijvingKlacht { get; set; }
+
         public int RechterID { get; set; }
 
         //navigatie
@@ -28,6 +30,7 @@ namespace Project_Recht_DAL
         
         public ICollection<Jury>Jury { get; set; }
 
-        public ICollection<Aanklacht>Aanklachten { get; set; }
+        public ICollection<RechtzaakAanklager> RechtzaakAanklagers { get; set; }
+        public ICollection<RechtzaakBeklaagde>RechtzaakBeklaagdes { get; set; }
     }
 }

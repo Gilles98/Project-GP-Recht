@@ -15,7 +15,7 @@ namespace Project_Recht_DAL
 
         }
 
-        public DbSet<Aanklacht>Aanklachter { get; set; }
+        public DbSet<RechtzaakAanklager>RechtzaakAanklager { get; set; }
         public DbSet<Aanklager> Aanklager { get; set; }
         public DbSet<Beklaagde> Beklaagdes { get; set; }
         public DbSet<Rechtzaak> Rechtzaken { get; set; }
@@ -27,6 +27,7 @@ namespace Project_Recht_DAL
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            modelBuilder.HasDefaultSchema("Recht");
             base.OnModelCreating(modelBuilder);
 
             // vanwege Volgende cascade melding moet ik dit met fluent oplossen

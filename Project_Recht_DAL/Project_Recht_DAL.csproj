@@ -51,20 +51,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Aanklacht.cs" />
     <Compile Include="Aanklager.cs" />
     <Compile Include="Beklaagde.cs" />
     <Compile Include="DatabaseInitializer.cs" />
     <Compile Include="Foutlogger.cs" />
     <Compile Include="Jury.cs" />
     <Compile Include="Jurylid.cs" />
-    <Compile Include="Migrations\202011101114303_InitialCreate.cs" />
-    <Compile Include="Migrations\202011101114303_InitialCreate.designer.cs">
-      <DependentUpon>202011101114303_InitialCreate.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202011141856366_UpdateRechter.cs" />
-    <Compile Include="Migrations\202011141856366_UpdateRechter.designer.cs">
-      <DependentUpon>202011141856366_UpdateRechter.cs</DependentUpon>
+    <Compile Include="Migrations\202012011920335_initialCreate.cs" />
+    <Compile Include="Migrations\202012011920335_initialCreate.designer.cs">
+      <DependentUpon>202012011920335_initialCreate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="RechtContext.cs" />
@@ -72,6 +67,8 @@
     <Compile Include="Rechtbank.cs" />
     <Compile Include="Rechter.cs" />
     <Compile Include="Rechtzaak.cs" />
+    <Compile Include="RechtzaakAanklager.cs" />
+    <Compile Include="RechtzaakBeklaagde.cs" />
     <Compile Include="Repositories\IRepository.cs" />
     <Compile Include="Repositories\Repository.cs" />
     <Compile Include="UnitOfWork\IUnitOfWork.cs" />
@@ -82,11 +79,8 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\202011101114303_InitialCreate.resx">
-      <DependentUpon>202011101114303_InitialCreate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202011141856366_UpdateRechter.resx">
-      <DependentUpon>202011141856366_UpdateRechter.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202012011920335_initialCreate.resx">
+      <DependentUpon>202012011920335_initialCreate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

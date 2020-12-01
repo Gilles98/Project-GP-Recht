@@ -36,6 +36,6 @@ namespace Project_Recht_DAL
 
         //navigatie
 
-        public ICollection<Aanklacht> Aanklachten { get; set; }
+        public ICollection<RechtzaakAanklager> Aanklachten { get; set; }
     }
 }

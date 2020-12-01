@@ -7,13 +7,13 @@ namespace Project_Recht_DAL.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.4.4")]
-    public sealed partial class UpdateRechter : IMigrationMetadata
+    public sealed partial class initialCreate : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(UpdateRechter));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(initialCreate));
         
         string IMigrationMetadata.Id
         {
-            get { return "202011141856366_UpdateRechter"; }
+            get { return "202012011920335_initialCreate"; }
         }
         
         string IMigrationMetadata.Source
