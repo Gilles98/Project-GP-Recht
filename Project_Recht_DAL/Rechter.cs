@@ -18,7 +18,7 @@ namespace Project_Recht_DAL
 
         [Required(ErrorMessage = "Achternaam is een verplicht veld!")]
         public string Achternaam { get; set; }
-       
+
         public int RechtbankID { get; set; }
         //navigatie
 
@@ -26,5 +26,9 @@ namespace Project_Recht_DAL
 
         public ICollection<Rechtzaak> Rechtzaken { get; set; }
 
+        public override string ToString()
+        {
+            return Voornaam + " " + Achternaam;  
+        }
     }
 }

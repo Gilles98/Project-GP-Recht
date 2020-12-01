@@ -186,8 +186,9 @@ namespace Project_Recht.ViewModels
                 if (SelectedPersoon is Aanklager || SelectedPersoon is Beklaagde)
                 {
                     view.DataContext = new OperatiePartijBeherenViewModel(SelectedPersoon, Uow);
+                    SelectedPersoon = new object();
                     view.ShowDialog();
-                    LijstenInstellen();
+
                 }
             }
 
@@ -224,6 +225,8 @@ namespace Project_Recht.ViewModels
             StaticPersoon.Aanklagers += VulAanklagers;
             StaticPersoon.Beklaagdes += VulBeklaagdes;
 
+            StaticPersoon.LijstInstellen += LijstenInstellen;
+
         }
 
         /// bij constructor met ID en na het verwijderen of wijzigen van een persoon
@@ -257,6 +260,11 @@ namespace Project_Recht.ViewModels
 
             Klacht = Rechtzaak.OmschrijvingKlacht;  
             SelectedRechter = uow.RechterRepo.ZoekOpPK(Rechtzaak.RechterID);
+
+            StaticPersoon.Aanklagers += VulAanklagers;
+            StaticPersoon.Beklaagdes += VulBeklaagdes;
+
+            StaticPersoon.LijstInstellen += LijstenInstellen;
         }
         public override string this[string columnName]
         {
@@ -289,7 +297,7 @@ namespace Project_Recht.ViewModels
         public void CheckDateTime()
         {
             //voor bij het starten van de view doe ik deze if. verder gaat hij er normaal altijd door
-            if (SelectedDateTime != DateTime.Now)
+            if (SelectedDateTime != DateTime.Now.Date)
             {
                 //controle op een afgelope datum 
                 if (DateTime.Now.Date.CompareTo(SelectedDateTime) >= 1)
@@ -301,7 +309,7 @@ namespace Project_Recht.ViewModels
                 else
                 {
                     int beschikbareDatum = (int)(DateTime.Now.Date.AddDays(3) - SelectedDateTime.Date).TotalDays;
-                    if (beschikbareDatum < 3 && beschikbareDatum >= 0)
+                    if (beschikbareDatum < 3 && beschikbareDatum > 0)
                     {
                         service.ToonMessageBox("het is niet mogenlijk om een rechtzaak volledig te organiseren binnen de 3 dagen");
                         SelectedDateTime = DateTime.Now.Date;
@@ -365,6 +373,36 @@ namespace Project_Recht.ViewModels
             Rechtzaak.OmschrijvingKlacht = Klacht;
         }
 
+        public void Verwijderen()
+        {
+            if (Rechtzaak.RechtbankID > 0)
+            {
+                //jury herinstellen
+                var jury = Uow.JuryRepo.Ophalen(x => x.RechtzaakID == Rechtzaak.RechtzaakID);
+                foreach (Jury personen in jury)
+                {
+                    var leden = Uow.JurylidRepo.Ophalen(x => x.JurylidID == personen.JurylidID);
+                    foreach (Jurylid lid in leden)
+                    {
+                        lid.Opgeroepen = false;
+                        Uow.JurylidRepo.Aanpassen(lid);
+                    }
+                    //manuele cascade
+                    Uow.JuryRepo.Verwijderen(personen);
+                }
+                //manuele cascade
+                var rechtzaakAanklagers = Uow.RechtzaakAanklagerRepo.Ophalen(x => x.RechtzaakID == Rechtzaak.RechtzaakID);
+                var rechtzaakBeklaagdes = Uow.RechtzaakBeklaagdeRepo.Ophalen(x => x.RechtzaakID == Rechtzaak.RechtzaakID);
+                Uow.RechtzaakAanklagerRepo.VerwijderenRange(rechtzaakAanklagers);
+                Uow.RechtzaakBeklaagdeRepo.VerwijderenRange(rechtzaakBeklaagdes);
+                Uow.Save();
+                Uow.RechtzaakRepo.Verwijderen(Rechtzaak);
+                Uow.Save();
+                service.ToonMessageBox("Zaak verwijderd!");
+                
+            }
+        }
+
 
         public void Bewaren()
         {
@@ -377,10 +415,10 @@ namespace Project_Recht.ViewModels
                 }
                 else
                 {
+                    RechtzaakInstellen();
                     if (Rechtzaak.RechtzaakID <= 0)
                     {
                         //rechtzaak als eerste toevoegen
-                        RechtzaakInstellen();
                         Uow.RechtzaakRepo.Toevoegen(Rechtzaak);
                         Uow.Save();
                         ///beklaagdes en aanklagers toevoegen
@@ -405,6 +443,12 @@ namespace Project_Recht.ViewModels
                         {
                             service.ToonMessageBox("Rechtzaak is succesvol aangemaakt!\n De deelnemende partijen worden vandaag nog op de hoogte gebracht.");
                         }
+                    }
+                    else
+                    {
+                        Uow.RechtzaakRepo.Aanpassen(Rechtzaak);
+                        Uow.Save();
+                        service.ToonMessageBox("Rechtzaak succesvol aangepast!");
                     }
                 }
 
@@ -435,6 +479,9 @@ namespace Project_Recht.ViewModels
                     break;
                 case "PartijBeheren":
                     OpenPartijBeheren("Nieuw");
+                    break;
+                case "Verwijderen":
+                    Verwijderen();
                     break;
                 default:
                     break;

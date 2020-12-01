@@ -21,6 +21,13 @@ namespace Project_Recht.Static
 
         public static event AanklagersDelegate Aanklagers;
 
+        public static event Action LijstInstellen;
+
+        public static void Updaten()
+        {
+            LijstInstellen?.Invoke();
+        }
+
         public static void KrijgBeklaagdes(Beklaagde beklaagde)
         {
             Beklaagdes?.Invoke(beklaagde);

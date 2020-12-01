@@ -135,7 +135,7 @@ namespace Project_Recht.ViewModels
                 RechtzaakBeheren view = new RechtzaakBeheren();
                 if (keuze == "Rechtzaak" && TreeItem.IsSelected && TreeItem.Header.ToString().Contains("Rechtzaak -"))
                 {
-                    view.DataContext = new OperatieRechtzaakBeherenViewModel(uow, false, (int)TreeItem.Tag);
+                    view.DataContext = new OperatieRechtzaakBeherenViewModel(uow, true, (int)TreeItem.Tag);
                 }
                 else
                 {
@@ -143,10 +143,11 @@ namespace Project_Recht.ViewModels
                 }
 
                 view.ShowDialog();
+                TreeItemHerinstellen();
                 UpdateBoom();
             }
 
-            TreeItemHerinstellen();
+            
 
 
         }
@@ -154,10 +155,7 @@ namespace Project_Recht.ViewModels
         {
             Tree = new ObservableCollection<TreeViewItem>();
             Rechtbanken = new ObservableCollection<Rechtbank>(uow.RechtbankRepo.Ophalen(x => x.Rechtzaken));
-            foreach (var item in Tree)
-            {
-                item.IsExpanded = true;
-            }
+            
         }
 
         public void TreeItemHerinstellen()

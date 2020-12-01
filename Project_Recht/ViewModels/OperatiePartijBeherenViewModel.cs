@@ -201,7 +201,7 @@ namespace Project_Recht.ViewModels
 
                     for (int i = 0; i <= lijst.Count - 1; i++)
                     {
-                        if (lijst[i].Name == "Item" || lijst[i].Name == "CheckRadio1" || lijst[i].Name == "CheckRadio2")
+                        if (lijst[i].Name == "Item")
                         {
                             lijst.Remove(lijst[i]);
                         }
@@ -269,46 +269,86 @@ namespace Project_Recht.ViewModels
         {
             if (Persoon is Beklaagde beklaagde)
             {
+                //manuele cascade
                 var fkRelatie = Uow.RechtzaakBeklaagdeRepo.Ophalen(x => x.BeklaagdeID == beklaagde.BeklaagdeID).SingleOrDefault();
                 Uow.RechtzaakBeklaagdeRepo.Verwijderen(fkRelatie);
-                Uow.BeklaagdeRepo.Verwijderen(beklaagde);
+                Uow.BeklaagdeRepo.Verwijderen((Beklaagde)Persoon);
             }
             if (Persoon is Aanklager aanklager)
             {
+                //manuele cascade
                 var fkRelatie = Uow.RechtzaakAanklagerRepo.Ophalen(x => x.AanklagerID == aanklager.AanklagerID).SingleOrDefault();
                 Uow.RechtzaakAanklagerRepo.Verwijderen(fkRelatie);
-                Uow.AanklagerRepo.Verwijderen(aanklager);
+                Uow.AanklagerRepo.Verwijderen((Aanklager)Persoon);
             }
             int ok = Uow.Save();
-            if (ok > 0)
-            {
-                dialog.ToonMessageBox("De persoon is succesvol uit de rechtzaak verwijderd!");
-            }
+            StaticPersoon.Updaten();
+            dialog.ToonMessageBox("De persoon is succesvol uit de rechtzaak verwijderd!");
+            
         }
-
         public void Bewaren()
         {
             if (this.IsGeldig())
             {
                 if (dialog.ToonMessageBoxPlusReturnAntwoord("Bent u zeker van al deze instellingen?", "Controle"))
                 {
-                    if (CheckRadio1)
+                    if (Persoon is Aanklager aanklager)
                     {
-                        Persoon = new Beklaagde() { Achternaam = Achternaam, Voornaam = Voornaam, Gemeente = Gemeente, HuisNr = Huisnummer, Straat = Straat, Postcode = Postcode };
-                        StaticPersoon.KrijgBeklaagdes((Beklaagde)Persoon);
-                        dialog.ToonMessageBox("Er is een beklaagde toegevoegd!");
+                        aanklager.Voornaam = Voornaam;
+                        aanklager.Achternaam = Achternaam;
+                        aanklager.Postcode = Postcode;
+                        aanklager.Straat = Straat;
+                        aanklager.HuisNr = Huisnummer;
+                        aanklager.Gemeente = Gemeente;
+                        if (aanklager.AanklagerID > 0)
+                        {
+                            Uow.AanklagerRepo.Aanpassen(aanklager);
+                            Uow.Save();
+
+                            StaticPersoon.Updaten();
+                            dialog.ToonMessageBox("Aanklager is aangepast!");
+                            
+                        }
                     }
-                    else if (CheckRadio2)
+                   else if (Persoon is Beklaagde beklaagde)
                     {
-                        Persoon = new Aanklager() { Achternaam = Achternaam, Voornaam = Voornaam, Gemeente = Gemeente, HuisNr = Huisnummer, Straat = Straat, Postcode = Postcode };
-                        StaticPersoon.KrijgAanklagers((Aanklager)Persoon);
-                        dialog.ToonMessageBox("Er is een aanklager toegevoegd!");
+                        beklaagde.Voornaam = Voornaam;
+                        beklaagde.Achternaam = Achternaam;
+                        beklaagde.Postcode = Postcode;
+                        beklaagde.Straat = Straat;
+                        beklaagde.HuisNr = Huisnummer;
+                        beklaagde.Gemeente = Gemeente;
+                        if (beklaagde.BeklaagdeID > 0)
+                        {
+                            Uow.BeklaagdeRepo.Aanpassen(beklaagde);
+                            Uow.Save();
+                            
+                            StaticPersoon.Updaten();
+                            dialog.ToonMessageBox("Beklaagde is aangepast!");
+                        }                       
                     }
                     else
                     {
-                        dialog.ToonMessageBox("Selecteer het type persoon dat je wil toevoegen!");
+                        if (CheckRadio1)
+                        {
+                            Persoon = new Beklaagde() { Achternaam = Achternaam, Voornaam = Voornaam, Gemeente = Gemeente, HuisNr = Huisnummer, Straat = Straat, Postcode = Postcode };
+                            StaticPersoon.KrijgBeklaagdes((Beklaagde)Persoon);
+                            Persoon = new object();
+                            dialog.ToonMessageBox("Er is een beklaagde toegevoegd!");
+                        }
+                        else if (CheckRadio2)
+                        {
+                            Persoon = new Aanklager() { Achternaam = Achternaam, Voornaam = Voornaam, Gemeente = Gemeente, HuisNr = Huisnummer, Straat = Straat, Postcode = Postcode };
+                            StaticPersoon.KrijgAanklagers((Aanklager)Persoon);
+                            Persoon = new object();
+                            dialog.ToonMessageBox("Er is een aanklager toegevoegd!");
+                        }
+                        else
+                        {
+                            dialog.ToonMessageBox("Selecteer het type persoon dat je wil toevoegen!");
+                        }
                     }
-
+                    
                 }
             }
 
