@@ -191,9 +191,6 @@ namespace Project_Recht.ViewModels
 
                 }
             }
-
-           
-
         }
 
 
