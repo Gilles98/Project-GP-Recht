@@ -19,8 +19,11 @@ namespace Project_Recht_DAL
 
         public string Achternaam { get; set; }
 
-        [Required(ErrorMessage = "Gemeente is verplicht!")]
 
+
+        [NotMapped]
+        public string VolledigeNaam => $"{Voornaam} {Achternaam}";
+        [Required(ErrorMessage = "Gemeente is verplicht!")]
         public string Gemeente { get; set; }
 
         [Required(ErrorMessage = "Straat is verplicht!")]

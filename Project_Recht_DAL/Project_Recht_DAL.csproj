@@ -61,6 +61,10 @@
     <Compile Include="Migrations\202012011920335_initialCreate.designer.cs">
       <DependentUpon>202012011920335_initialCreate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202012121332048_UpdateLocal2.cs" />
+    <Compile Include="Migrations\202012121332048_UpdateLocal2.designer.cs">
+      <DependentUpon>202012121332048_UpdateLocal2.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="RechtContext.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -81,6 +85,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\202012011920335_initialCreate.resx">
       <DependentUpon>202012011920335_initialCreate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202012121332048_UpdateLocal2.resx">
+      <DependentUpon>202012121332048_UpdateLocal2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

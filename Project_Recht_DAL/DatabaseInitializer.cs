@@ -12,8 +12,8 @@ namespace Project_Recht_DAL
         {
             using (RechtContext context = new RechtContext())
             {
-
-                if (context.Juryleden.Any())
+                ///om extra zejer te zijn dat hij gewoon void returned;
+                if (context.Juryleden.Any() || context.Rechters.Any() || context.Aanklager.Any() || context.Beklaagdes.Any())
                 {
                     return;
                 }

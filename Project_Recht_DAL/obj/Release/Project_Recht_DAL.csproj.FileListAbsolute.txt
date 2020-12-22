@@ -1,0 +1,13 @@
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\bin\Release\Project_Recht_DAL.dll.config
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\bin\Release\Project_Recht_DAL.dll
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\bin\Release\Project_Recht_DAL.pdb
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\bin\Release\EntityFramework.dll
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\bin\Release\EntityFramework.SqlServer.dll
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\bin\Release\EntityFramework.xml
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\bin\Release\EntityFramework.SqlServer.xml
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\obj\Release\Project_Recht_DAL.Migrations.initialCreate.resources
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\obj\Release\Project_Recht_DAL.csproj.GenerateResource.cache
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\obj\Release\Project_Recht_DAL.csproj.CoreCompileInputs.cache
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\obj\Release\Project_Recht_DAL.csproj.CopyComplete
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\obj\Release\Project_Recht_DAL.dll
+C:\Users\guigi\OneDrive\Bureaublad\Project-GP-Recht\Project_Recht_DAL\obj\Release\Project_Recht_DAL.pdb

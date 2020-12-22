@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Data;
 
 namespace Project_Recht.ViewModels
 {
@@ -23,11 +24,50 @@ namespace Project_Recht.ViewModels
         private ObservableCollection<Rechter> _rechters;
         private ObservableCollection<Beklaagde> _beklaagdes;
         private ObservableCollection<Aanklager> _aanklagers;
+
+        private ObservableCollection<Beklaagde> _bestaandeBeklaagdes;
+        private ObservableCollection<Aanklager> _bestaandeAanklagers;
         private bool _enableSelectionRechter;
         private DateTime _selectedDateTime;
         private object _selectedPersoon;
+
+        private Beklaagde _bestaandeBeklaagde;
+        private Aanklager _bestaandeAanklager;
         public bool IsSelected { get; set; }
         private IUnitOfWork Uow { get; set; }
+
+        public event EventHandler CloseWindow;
+
+        public event EventHandler RefreshBeklaagdes;
+
+        public event EventHandler RefreshAanklagers;
+
+        public Beklaagde BestaandeBeklaagde
+        {
+            get 
+            { 
+                return _bestaandeBeklaagde; 
+            }
+            set 
+            { 
+                _bestaandeBeklaagde = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public Aanklager BestaandeAanklager 
+        {
+            get
+            {
+                return _bestaandeAanklager;
+            }
+            set
+            {
+                _bestaandeAanklager = value;
+                NotifyPropertyChanged();
+            }
+        }
+
 
         public Rechtzaak Rechtzaak
         {
@@ -49,9 +89,8 @@ namespace Project_Recht.ViewModels
             set
             {
                 _selectedPersoon = value;
-
-                OpenPartijBeheren("");
                 NotifyPropertyChanged();
+                OpenPartijBeheren("");
 
             }
         }
@@ -93,6 +132,32 @@ namespace Project_Recht.ViewModels
                 NotifyPropertyChanged();
             }
         }
+
+        public ObservableCollection<Aanklager> BestaandeAanklagers
+        {
+            get
+            {
+                return _bestaandeAanklagers;
+            }
+            set
+            {
+                _bestaandeAanklagers = value;
+                NotifyPropertyChanged();
+            }
+        }
+
+        public ObservableCollection<Beklaagde> BestaandeBeklaagdes 
+        {
+            get
+            {
+                return _bestaandeBeklaagdes;
+            }
+            set
+            {
+                _bestaandeBeklaagdes = value;
+                NotifyPropertyChanged();
+            }
+        } 
 
         public ObservableCollection<Rechter> Rechters
         {
@@ -172,13 +237,10 @@ namespace Project_Recht.ViewModels
         {
             Partijbeheren view = new Partijbeheren();
 
-            ///omdat het verwijderen en het wijzigen van een persoon wel in een ander scherm gebeurt doe ik 2x showdialog
-            ///om te vermijden dat bij het aanmaken de persoon naar de database wordt gezet terwijl je nog zou kunnen wegklikken
-            ///van het scherm waar dit viewmodel aan gelinked is
 
             if (keuze == "Nieuw")
             {
-                view.DataContext = new OperatiePartijBeherenViewModel();
+                view.DataContext = new OperatiePartijBeherenViewModel(Uow);
                 view.ShowDialog();
             }
             else
@@ -186,9 +248,7 @@ namespace Project_Recht.ViewModels
                 if (SelectedPersoon is Aanklager || SelectedPersoon is Beklaagde)
                 {
                     view.DataContext = new OperatiePartijBeherenViewModel(SelectedPersoon, Uow);
-                    SelectedPersoon = new object();
                     view.ShowDialog();
-
                 }
             }
         }
@@ -216,17 +276,21 @@ namespace Project_Recht.ViewModels
             Aanklagers = new ObservableCollection<Aanklager>();
             Rechtbanken = new ObservableCollection<Rechtbank>(Uow.RechtbankRepo.Ophalen());
             SelectedDateTime = DateTime.Now;
+            SelectedPersoon = new object();
+            ComboboxenInstellen();
+            BestaandeBeklaagde = new Beklaagde();
+            BestaandeAanklager = new Aanklager();
             //om fout te voorkomen
             Rechters = new ObservableCollection<Rechter>();
             Rechtzaak = new Rechtzaak();
             StaticPersoon.Aanklagers += VulAanklagers;
             StaticPersoon.Beklaagdes += VulBeklaagdes;
-
+            StaticPersoon.UpdateLijst += PersoonWijzigenInLijst;
             StaticPersoon.LijstInstellen += LijstenInstellen;
 
         }
 
-        /// bij constructor met ID en na het verwijderen of wijzigen van een persoon
+        /// bij constructor met ID en na het verwijderen of wijzigen van een persoon die in de database staat gelinked aan de rechtzaak
         public void LijstenInstellen()
         {
             var rechtzaakAanklagers = Uow.RechtzaakAanklagerRepo.Ophalen(x => x.RechtzaakID == Rechtzaak.RechtzaakID);
@@ -242,7 +306,38 @@ namespace Project_Recht.ViewModels
             {
                 Beklaagdes.Add(Uow.BeklaagdeRepo.Ophalen(x => x.BeklaagdeID == item.BeklaagdeID).SingleOrDefault());
             }
+            ComboboxenInstellen();
         }
+
+        ///comboboxen opvullen met personen die nog niet zijn geselecteerd
+        public void ComboboxenInstellen()
+        {
+            
+            BestaandeAanklagers = new ObservableCollection<Aanklager>(Uow.AanklagerRepo.Ophalen());
+            BestaandeBeklaagdes = new ObservableCollection<Beklaagde>(Uow.BeklaagdeRepo.Ophalen());
+            ///filteren
+            if (Aanklagers.Count > 0)
+            {
+                foreach (var aanklager in Aanklagers)
+                {
+                    if (BestaandeAanklagers.Contains(aanklager))
+                    {
+                        BestaandeAanklagers.Remove(aanklager);
+                    }
+                }
+            }
+            if (Beklaagdes.Count > 0)
+            {
+                foreach (var beklaagde in Beklaagdes)
+                {
+                    if (BestaandeBeklaagdes.Contains(beklaagde))
+                    {
+                        BestaandeBeklaagdes.Remove(beklaagde);
+                    }
+                }
+            }
+        }
+
         public OperatieRechtzaakBeherenViewModel(IUnitOfWork uow, bool selected, int id)
         {
             IsSelected = selected;
@@ -254,13 +349,14 @@ namespace Project_Recht.ViewModels
             Rechtbanken = new ObservableCollection<Rechtbank>(Uow.RechtbankRepo.Ophalen());
             SelectedDateTime = Rechtzaak.Moment;
             SelectedRechtbank = Uow.RechtbankRepo.ZoekOpPK(Rechtzaak.RechtbankID);
+            BestaandeBeklaagde = new Beklaagde();
+            BestaandeAanklager = new Aanklager();
 
             Klacht = Rechtzaak.OmschrijvingKlacht;  
             SelectedRechter = uow.RechterRepo.ZoekOpPK(Rechtzaak.RechterID);
-
+            StaticPersoon.UpdateLijst += PersoonWijzigenInLijst;
             StaticPersoon.Aanklagers += VulAanklagers;
             StaticPersoon.Beklaagdes += VulBeklaagdes;
-
             StaticPersoon.LijstInstellen += LijstenInstellen;
         }
         public override string this[string columnName]
@@ -294,7 +390,7 @@ namespace Project_Recht.ViewModels
         public void CheckDateTime()
         {
             //voor bij het starten van de view doe ik deze if. verder gaat hij er normaal altijd door
-            if (SelectedDateTime != DateTime.Now.Date)
+            if (SelectedDateTime.Date != DateTime.Now.Date)
             {
                 //controle op een afgelope datum 
                 if (DateTime.Now.Date.CompareTo(SelectedDateTime) >= 1)
@@ -308,8 +404,16 @@ namespace Project_Recht.ViewModels
                     int beschikbareDatum = (int)(DateTime.Now.Date.AddDays(3) - SelectedDateTime.Date).TotalDays;
                     if (beschikbareDatum < 3 && beschikbareDatum > 0)
                     {
-                        service.ToonMessageBox("het is niet mogenlijk om een rechtzaak volledig te organiseren binnen de 3 dagen");
-                        SelectedDateTime = DateTime.Now.Date;
+                        //voorkomt bug
+                        if (beschikbareDatum == 2 && Rechtzaak.RechtzaakID > 0)
+                        {
+                            return;
+                        }
+                        else
+                        {
+                            service.ToonMessageBox("het is niet mogenlijk om een rechtzaak volledig te organiseren binnen de 3 dagen");
+                            SelectedDateTime = DateTime.Now.Date;
+                        }
                     }
                 }
             }
@@ -363,11 +467,35 @@ namespace Project_Recht.ViewModels
 
         public void RechtzaakInstellen()
         {
-            Rechtzaak.Code = GenereerCodeRechtzaak();
+            if (Rechtzaak.RechtzaakID == 0)
+            {
+                Rechtzaak.Code = GenereerCodeRechtzaak();
+            }
             Rechtzaak.RechtbankID = SelectedRechtbank.RechtbankID;
             Rechtzaak.RechterID = SelectedRechter.RechterID;
             Rechtzaak.Moment = SelectedDateTime;
             Rechtzaak.OmschrijvingKlacht = Klacht;
+        }
+
+        //als een persoon nog niet gelinked is aan de rechtzaak maar men wil hem wel editen dan wordt deze methode gebruikt om de lijst te updaten
+        public void PersoonWijzigenInLijst(object nieuwPersoon)
+        {
+            if (SelectedPersoon is Aanklager oudeAanklager && nieuwPersoon is Aanklager vernieuwdeAanklager)
+            {
+                Aanklagers[Aanklagers.IndexOf(oudeAanklager)] = vernieuwdeAanklager;
+                //datagrid updaten omdat dit niet automatisch gebeurde
+                Aanklagers = new ObservableCollection<Aanklager>(Aanklagers);
+            }
+            if (SelectedPersoon is Beklaagde oudeBeklaagde && nieuwPersoon is Beklaagde vernieuwdeBeklaagde)
+            {
+                var sel = SelectedPersoon;
+               Beklaagdes[Beklaagdes.IndexOf(oudeBeklaagde)] = vernieuwdeBeklaagde;
+                //datagrid updaten omdat dit niet automatisch gebeurde
+                Beklaagdes = new ObservableCollection<Beklaagde>(Beklaagdes);
+            }
+            //nodig om de aangepaste gebruiker terug te filteren
+            ComboboxenInstellen();
+            SelectedPersoon = new object();
         }
 
         public void Verwijderen()
@@ -396,6 +524,9 @@ namespace Project_Recht.ViewModels
                 Uow.RechtzaakRepo.Verwijderen(Rechtzaak);
                 Uow.Save();
                 service.ToonMessageBox("Zaak verwijderd!");
+
+                //mvvm vriendelijke window.close :D
+                CloseWindow(this, new EventArgs());
                 
             }
         }
@@ -418,13 +549,11 @@ namespace Project_Recht.ViewModels
                         //rechtzaak als eerste toevoegen
                         Uow.RechtzaakRepo.Toevoegen(Rechtzaak);
                         Uow.Save();
-                        ///beklaagdes en aanklagers toevoegen
-                        Uow.AanklagerRepo.ToevoegenRange(Aanklagers);
-                        Uow.BeklaagdeRepo.ToevoegenRange(Beklaagdes);
-                        Uow.Save();
                         ///jury laten genereren
                         Uow.JuryRepo.ToevoegenRange(JuryAanduiden());
                         Uow.Save();
+
+
                         //aanklachten instellen
                         foreach (Aanklager aanklager in Aanklagers)
                         {
@@ -438,20 +567,64 @@ namespace Project_Recht.ViewModels
                         int ok = Uow.Save();
                         if (ok > 0)
                         {
-                            service.ToonMessageBox("Rechtzaak is succesvol aangemaakt!\n De deelnemende partijen worden vandaag nog op de hoogte gebracht.");
+                            service.ToonMessageBox("Rechtzaak is succesvol aangemaakt!\nDe deelnemende partijen worden vandaag nog op de hoogte gebracht.");
+
+                            //mvvm vriendelijke window.close :D
+                            CloseWindow(this, new EventArgs());
                         }
                     }
                     else
                     {
                         Uow.RechtzaakRepo.Aanpassen(Rechtzaak);
+
+                        //aanklachten instellen voor als er een nieuwe persoon is toegevoegd bij het aanpassen van de rechtzaak
+                        foreach (Aanklager aanklager in Aanklagers)
+                        {
+                            var persoon = Uow.RechtzaakAanklagerRepo.Ophalen(x => x.RechtzaakID == Rechtzaak.RechtzaakID && x.AanklagerID == aanklager.AanklagerID).SingleOrDefault();
+                            if (persoon == null)
+                            {
+                                Uow.RechtzaakAanklagerRepo.Toevoegen(new RechtzaakAanklager() { AanklagerID = aanklager.AanklagerID, RechtzaakID = Rechtzaak.RechtzaakID });
+                            }
+                               
+                        }
+                        foreach (Beklaagde beklaagde in Beklaagdes)
+                        {
+                            var persoon = Uow.RechtzaakBeklaagdeRepo.Ophalen(x => x.RechtzaakID == Rechtzaak.RechtzaakID && x.BeklaagdeID == beklaagde.BeklaagdeID).SingleOrDefault();
+                            if (persoon == null)
+                            {
+                                Uow.RechtzaakBeklaagdeRepo.Toevoegen(new RechtzaakBeklaagde() { BeklaagdeID = beklaagde.BeklaagdeID, RechtzaakID = Rechtzaak.RechtzaakID });
+                            }
+                                                     
+                        }
                         Uow.Save();
                         service.ToonMessageBox("Rechtzaak succesvol aangepast!");
+
+                        //mvvm vriendelijke window.close :D
+                        CloseWindow(this, new EventArgs());
                     }
                 }
 
             }
         }
-        
+        public void BestaandeBeklaagdeToevoegen()
+        {
+            if (BestaandeBeklaagde.BeklaagdeID > 0)
+            {
+                VulBeklaagdes(BestaandeBeklaagde);
+                ComboboxenInstellen();
+            }            
+            BestaandeBeklaagde = new Beklaagde();
+        }
+
+        public void BestaandeAanklagerToevoegen()
+        {
+            if (BestaandeAanklager.AanklagerID > 0)
+            {
+                VulAanklagers(BestaandeAanklager);
+                ComboboxenInstellen();
+            }
+            BestaandeAanklager = new Aanklager();
+        }
 
         public override bool CanExecute(object parameter)
         {
@@ -479,6 +652,12 @@ namespace Project_Recht.ViewModels
                     break;
                 case "Verwijderen":
                     Verwijderen();
+                    break;
+                case "BeklaagdeToevoegen":
+                 BestaandeBeklaagdeToevoegen();
+                    break;
+                case "AanklagerToevoegen":
+                    BestaandeAanklagerToevoegen();
                     break;
                 default:
                     break;

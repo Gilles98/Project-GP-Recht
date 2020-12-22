@@ -12,17 +12,22 @@ namespace Project_Recht.Static
     public delegate void BeklaagdesDelegate(Beklaagde beklaagde);
 
     public delegate void AanklagersDelegate(Aanklager aanklager);
+    public delegate void PersoonUpdateDelegate(object persoon);
     public static class StaticPersoon
     {
-        public static List<Aanklager> StaticAanklagers { get; set; } = new List<Aanklager>();
-        public static List<Beklaagde> StaticBeklaagdes { get; set; } = new List<Beklaagde>();
 
+        public static event PersoonUpdateDelegate UpdateLijst;
         public static event BeklaagdesDelegate Beklaagdes;
 
         public static event AanklagersDelegate Aanklagers;
 
         public static event Action LijstInstellen;
 
+
+        public static void LijstAanpassen( object nieuwePersoon)
+        {
+            UpdateLijst?.Invoke(nieuwePersoon);
+        }
         public static void Updaten()
         {
             LijstInstellen?.Invoke();

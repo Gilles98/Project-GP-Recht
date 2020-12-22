@@ -19,6 +19,8 @@ namespace Project_Recht
         {
             //vanwege code in de methode zelf wordt deze niet telkens uitgevoerd
             DatabaseInitializer.InsertDB();
+
+            
             StartView start = new StartView();
             StartViewViewModel startView = new StartViewViewModel();
             start.DataContext = startView;

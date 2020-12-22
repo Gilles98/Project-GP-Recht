@@ -125,6 +125,9 @@
     <Compile Include="UserControls\IntroRechtbankenEnRechters.xaml.cs">
       <DependentUpon>IntroRechtbankenEnRechters.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\IntroRechtzaken.xaml.cs">
+      <DependentUpon>IntroRechtzaken.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\OperatiesRechtbank.xaml.cs">
       <DependentUpon>OperatiesRechtbank.xaml</DependentUpon>
     </Compile>
@@ -132,6 +135,7 @@
       <DependentUpon>OperatiesRechter.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\Basis.cs" />
+    <Compile Include="ViewModels\DetailsViewModel.cs" />
     <Compile Include="ViewModels\OperatiePartijBeherenViewModel.cs" />
     <Compile Include="ViewModels\OperatieRechtzaakBeherenViewModel.cs" />
     <Compile Include="ViewModels\OperatiesRechtbankViewModel.cs" />
@@ -163,6 +167,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\IntroRechtbankenEnRechters.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\IntroRechtzaken.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

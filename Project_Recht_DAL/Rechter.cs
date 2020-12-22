@@ -21,7 +21,8 @@ namespace Project_Recht_DAL
 
         public int RechtbankID { get; set; }
         //navigatie
-
+        [NotMapped]
+        public string Weergave => $"Rechter: {Voornaam} {Achternaam}";
         public Rechtbank Rechtbank { get; set; }
 
         public ICollection<Rechtzaak> Rechtzaken { get; set; }

@@ -17,6 +17,7 @@ namespace Project_Recht.ViewModels
     {
         public IUnitOfWork uow = new UnitOfWork(new RechtContext());
         private ObservableCollection<Rechtbank> _rechtbanken;
+        private IDialog dialog = new Dialog();
         private IntroRechtbankenEnRechters intro = new IntroRechtbankenEnRechters();
         private UserControl _control;
         private ObservableCollection<TreeViewItem> _tree;
@@ -102,7 +103,7 @@ namespace Project_Recht.ViewModels
             Tree = new ObservableCollection<TreeViewItem>();
             TreeItem = new TreeViewItem();
             Rechtbanken = new ObservableCollection<Rechtbank>(uow.RechtbankRepo.Ophalen(y => y.Rechtzaken));
-            IntroRechtbankenEnRechters intro = new IntroRechtbankenEnRechters();
+            IntroRechtzaken intro = new IntroRechtzaken();
             Control = intro;
         }
 
@@ -120,27 +121,39 @@ namespace Project_Recht.ViewModels
             }
         }
 
-        //Ik geef de UnitOfWork mee door omdat ik anders een bug had bij het verwijderen van een item in zowel rechters als rechtbanken
-
         public void OperatieOpenen(string keuze)
         {
 
             if (keuze == "Details")
             {
-                ///details view openen
+                if (!TreeItem.IsSelected)
+                {
+                    dialog.ToonMessageBox("Eerst een rechtzaak selecteren!");
+                }
+                else
+                {
+                    ///details view openen
+                    Details usc = new Details();
+                    usc.DataContext = new DetailsViewModel(uow, (int)TreeItem.Tag);
+                    Control = usc;
+                }
             }
 
             else
             {
                 RechtzaakBeheren view = new RechtzaakBeheren();
+                OperatieRechtzaakBeherenViewModel vm = null;
                 if (keuze == "Rechtzaak" && TreeItem.IsSelected && TreeItem.Header.ToString().Contains("Rechtzaak -"))
                 {
-                    view.DataContext = new OperatieRechtzaakBeherenViewModel(uow, true, (int)TreeItem.Tag);
+                     vm = new OperatieRechtzaakBeherenViewModel(uow, true, (int)TreeItem.Tag);  
                 }
                 else
                 {
-                    view.DataContext = new OperatieRechtzaakBeherenViewModel(uow, false);
+                    vm = new OperatieRechtzaakBeherenViewModel(uow, false);
                 }
+                //gaat event instellen zodat de window geclosed wordt als een rechtzaak is verwijderd, aangepast of aangemaakt
+                vm.CloseWindow += (s, e) => view.Close();
+                view.DataContext = vm;
 
                 view.ShowDialog();
                 TreeItemHerinstellen();

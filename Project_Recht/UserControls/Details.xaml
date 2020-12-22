@@ -24,32 +24,30 @@
             <ColumnDefinition/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
-            <RowDefinition/>
+            <RowDefinition Height="75*"/>
+            <RowDefinition Height="93*"/>
+            <RowDefinition Height="71*"/>
+            <RowDefinition Height="59*"/>
         </Grid.RowDefinitions>
-        <DataGrid Grid.RowSpan="2" Grid.ColumnSpan="2" Margin="129,22,125.8,52.6" Background="White" BorderBrush="Black" BorderThickness="1" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" ColumnHeaderStyle="{DynamicResource CenterGridHeaderStyle}">
+        <DataGrid Grid.RowSpan="2" ItemsSource="{Binding Leden}" SelectedItem="{Binding Jurylid}" Grid.ColumnSpan="2" Margin="129,22,125.8,29" Background="White" BorderBrush="Black" BorderThickness="1" AutoGenerateColumns="False" IsReadOnly="True" CanUserAddRows="False" ColumnHeaderStyle="{DynamicResource CenterGridHeaderStyle}">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Jury" HeaderStyle="{StaticResource CenterGridHeaderStyle}" Width="*"></DataGridTextColumn>
+                <DataGridTextColumn Header="Jury" HeaderStyle="{StaticResource CenterGridHeaderStyle}" Binding="{Binding VolledigeNaam}" Width="*"></DataGridTextColumn>
             </DataGrid.Columns>
         </DataGrid>
 
-        <TextBox Grid.Row="1" Margin="10,44.8,9.6,4.6" materialDesign:HintAssist.Hint="Voornaam nieuw jurylid">
-            
+        <TextBox Grid.Row="1" Margin="10,68.8,9.6,3" materialDesign:HintAssist.Hint="Voornaam nieuw jurylid" Text="{Binding Voornaam, ValidatesOnDataErrors=True}">
+
         </TextBox>
-        <TextBox Grid.Row="1" Grid.Column="1" Margin="10.4,44.8,10.8,4.6" materialDesign:HintAssist.Hint="Achternaam nieuw jurylid"/>
-        <Grid Grid.ColumnSpan="2" Grid.Row="2">
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="10.4,68.8,10.8,3" materialDesign:HintAssist.Hint="Achternaam nieuw jurylid" Text="{Binding Achternaam , ValidatesOnDataErrors=True}"/>
+        <Grid Grid.ColumnSpan="2" Grid.Row="2" Margin="0,2,-0.2,0.2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition/>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
-            <Button Grid.Column="0" Margin="10" Background="Navy" Content="Verwijderen"></Button>
-            <Button Grid.Column="1" Margin="10" Background="Navy" Content="Reset"></Button>
-            <Button Grid.Column="2" Margin="10" Background="Navy" Content="Bewaren"></Button>
+            <Button Grid.Column="0" Margin="10" Background="Navy" Content="Verwijderen" Command="{Binding}" CommandParameter="Verwijderen"></Button>
+            <Button Grid.Column="1" Margin="10" Background="Navy" Content="Bewaren" Command="{Binding}" CommandParameter="Bewaren"></Button>
         </Grid>
-        <Label Content="some binding" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,10,248.8,0.4"/>
-        <Label Content="some binding" Grid.Row="3" Grid.Column="1" Margin="10.4,10,-0.2,0.4" />
+        <Label Content="{Binding Rechtzaak.Weergave}" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Margin="20,11.8,248.8,-3.6"/>
+        <Label Content="{Binding Rechtzaak.Rechter.Weergave}" Grid.Row="3" Grid.Column="1" Margin="10.4,11.8,-0.2,-3.6" />
     </Grid>
 </UserControl>

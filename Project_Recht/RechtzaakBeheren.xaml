@@ -44,18 +44,29 @@
             <Label Content="Rechter" FontSize="40" HorizontalAlignment="Left" Margin="10"/>
             <ComboBox SelectedItem="{Binding SelectedRechter, ValidatesOnDataErrors=True}" BorderBrush="Black" ToolTip="Selecteer een rechter" BorderThickness="1" Margin="10" IsEnabled="{Binding EnableSelectionRechter}" ItemsSource="{Binding Rechters}"></ComboBox>
         </StackPanel>
+        <StackPanel Grid.Row="3" Margin="49,30,240.8,0">
+            <Label Content="Bestaande aanklagers"/>
+            <ComboBox ItemsSource="{Binding BestaandeAanklagers}" SelectedItem="{Binding BestaandeAanklager}" DisplayMemberPath="VolledigeNaam"></ComboBox>
+            <Button Command="{Binding}"  Background="Navy" CommandParameter ="AanklagerToevoegen" Content="Toevoegen" Margin="5,5,5.2,5"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="3" Grid.Column="1" Margin="239.2,30,45.6,0">
+            <Label Content="Bestaande beklaagdes"/>
+            <ComboBox ItemsSource="{Binding BestaandeBeklaagdes}" SelectedItem="{Binding BestaandeBeklaagde}" DisplayMemberPath="VolledigeNaam"></ComboBox>
+            <Button Command="{Binding}"  Background="Navy" CommandParameter ="BeklaagdeToevoegen" Content="Toevoegen" Margin="5,5,5.2,5"/>
+        </StackPanel>
 
         <StackPanel Grid.Column="1" Grid.Row="2" Orientation="Vertical" Margin="20.2,20.8,19.6,12">
             <Label Content="Datum" FontSize="40" HorizontalAlignment="Left" Margin="10"/>
             <DatePicker SelectedDate="{Binding SelectedDateTime, ValidatesOnDataErrors=True}" Focusable="False" Margin="10,0,9.8,0" Height="37"/>
         </StackPanel>
-        <DataGrid x:Name="aanklagers" ItemsSource="{Binding Aanklagers}" SelectedItem="{Binding SelectedPersoon}"  Background="WhiteSmoke" BorderThickness="1" BorderBrush="Black"  Grid.Row="3"  Margin="300,30,496.6,23" RenderTransformOrigin="0.5,0.5" IsReadOnly="True" AutoGenerateColumns="False" Grid.ColumnSpan="2">
+        <DataGrid x:Name="aanklagers" ItemsSource="{Binding Aanklagers, Mode=TwoWay}" SelectedItem="{Binding SelectedPersoon}"  Background="WhiteSmoke" BorderThickness="1" BorderBrush="Black"  Grid.Row="3"  Margin="300,30,496.6,23" RenderTransformOrigin="0.5,0.5" IsReadOnly="True" AutoGenerateColumns="False" Grid.ColumnSpan="2">
             <DataGrid.Columns>
             <DataGridTextColumn Header="Aanklager(s)" Binding="{Binding Voornaam}"/>
             </DataGrid.Columns>
         </DataGrid>
 
-        <DataGrid x:Name="beklaagdes" ItemsSource="{Binding Beklaagdes}" Background="WhiteSmoke" SelectedItem="{Binding SelectedPersoon}" BorderThickness="1" BorderBrush="Black"  Grid.Row="3"   Margin="0.2,30,300.6,23" RenderTransformOrigin="0.5,0.5" IsReadOnly="True" AutoGenerateColumns="False" Grid.Column="1">
+        <DataGrid x:Name="beklaagdes" ItemsSource="{Binding Beklaagdes, Mode=TwoWay}" Background="WhiteSmoke" SelectedItem="{Binding SelectedPersoon}" BorderThickness="1" BorderBrush="Black"  Grid.Row="3"   Margin="0.2,30,300.6,23" RenderTransformOrigin="0.5,0.5" IsReadOnly="True" AutoGenerateColumns="False" Grid.Column="1">
             <DataGrid.Columns>
             <DataGridTextColumn Header="Beklaagde(s)" Binding="{Binding Voornaam}"/>
             </DataGrid.Columns>

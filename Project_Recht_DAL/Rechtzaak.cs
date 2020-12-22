@@ -22,8 +22,11 @@ namespace Project_Recht_DAL
 
         public int RechterID { get; set; }
 
-        //navigatie
+        [NotMapped]
+        public string Weergave => $"Dag van de uitspraak: {Moment.Day}/{Moment.Month}/{Moment.Year}";
 
+        //navigatie
+        
         public Rechter Rechter { get; set; }
 
         public Rechtbank Rechtbank { get; set; }

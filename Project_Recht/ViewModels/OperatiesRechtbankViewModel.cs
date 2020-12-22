@@ -211,6 +211,24 @@ namespace Project_Recht.ViewModels
                 {
                     if (dialog.ToonMessageBoxPlusReturnAntwoord("Deze rechtbank bevat nog rechters en rechtzaken, bent u zeker dat u deze wil verwijderen?", "Melding"))
                     {
+                        var rechtzaken = Uow.RechtzaakRepo.Ophalen(x => x.RechtbankID == Rechtbank.RechtbankID);
+                        if (rechtzaken.Count() > 0)
+                        {
+                            foreach (var item in rechtzaken)
+                            {
+                                Uow.RechtzaakAanklagerRepo.VerwijderenRange(Uow.RechtzaakAanklagerRepo.Ophalen(x => x.RechtzaakID == item.RechtzaakID));
+                                Uow.RechtzaakBeklaagdeRepo.VerwijderenRange(Uow.RechtzaakBeklaagdeRepo.Ophalen(x => x.RechtzaakID == item.RechtzaakID));
+                                //jury reset
+                                var jury = Uow.JuryRepo.Ophalen(x => x.RechtzaakID == item.RechtzaakID, includes: x => x.Jurylid);
+                                foreach (var lid in jury)
+                                {
+                                    lid.Jurylid.Opgeroepen = false;
+                                    Uow.JurylidRepo.Aanpassen(lid.Jurylid);
+                                }
+                                Uow.JuryRepo.VerwijderenRange(jury);
+                            }
+                            Uow.RechtzaakRepo.VerwijderenRange(rechtzaken);
+                        }
                         Uow.RechterRepo.VerwijderenRange(Rechtbank.Rechters);
                         Uow.RechtbankRepo.Verwijderen(Rechtbank);
     

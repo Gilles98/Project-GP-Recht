@@ -34,7 +34,7 @@ namespace Project_Recht_DAL
             // Introducing FOREIGN KEY constraint 'FK_dbo.Rechter_dbo.Rechtbanken_RechtbankID' on table 'Rechter' may cause cycles or multiple cascade paths. 
             // Specify ON DELETE NO ACTION or ON UPDATE NO ACTION, or modify other FOREIGN KEY constraints.
             // Could not create constraint or index. See previous errors.
-            modelBuilder.Entity<Rechter>().HasRequired(x => x.Rechtbank).WithMany().WillCascadeOnDelete(false);
+            modelBuilder.Entity<Rechter>().HasRequired(x => x.Rechtbank).WithMany(x => x.Rechters).WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Rechter>().HasRequired(x => x.Rechtbank).WithMany(x => x.Rechters).HasForeignKey(x => x.RechtbankID);
         }

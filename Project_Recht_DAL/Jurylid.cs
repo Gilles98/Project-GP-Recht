@@ -13,12 +13,12 @@ namespace Project_Recht_DAL
     {
         public int JurylidID { get; set; }
 
-        [Required(ErrorMessage = "Voornaam is verplicht!")]
         public string Voornaam { get; set; }
 
-        [Required(ErrorMessage = "Voornaam is verplicht!")]
         public string Achternaam { get; set; }
 
+        [NotMapped]
+        public string VolledigeNaam => $"{Voornaam} {Achternaam}";
         public Boolean Opgeroepen { get; set; }
 
         //navigatie
