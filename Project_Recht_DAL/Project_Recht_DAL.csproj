@@ -58,7 +58,6 @@
     <Compile Include="DomainModels\Aanklager.cs" />
     <Compile Include="DomainModels\Beklaagde.cs" />
     <Compile Include="Data\DatabaseInitializer.cs" />
-    <Compile Include="FileOperator\Foutlogger.cs" />
     <Compile Include="DomainModels\Jury.cs" />
     <Compile Include="DomainModels\Jurylid.cs" />
     <Compile Include="Migrations\202012011920335_initialCreate.cs" />

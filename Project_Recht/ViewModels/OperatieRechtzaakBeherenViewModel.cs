@@ -451,10 +451,7 @@ namespace Project_Recht.ViewModels
                     if (ToonMelding)
                     {
                         int beschikbareDatum = (int)(DateTime.Now.Date.AddDays(3) - SelectedDateTime.Date).TotalDays;
-                        if (beschikbareDatum == 1)
-                        {
-                            service.ToonMessageBox("Hey hey");
-                        }
+
                         if (beschikbareDatum < 3 && beschikbareDatum > 0)
                         {
                                 service.ToonMessageBox("het is niet mogenlijk om een rechtzaak volledig te organiseren binnen de 3 dagen van de huidige datum");
@@ -633,6 +630,7 @@ namespace Project_Recht.ViewModels
                         if (ok > 0)
                         {
                             service.ToonMessageBox("Rechtzaak is succesvol aangemaakt!\nDe deelnemende partijen worden vandaag nog op de hoogte gebracht.");
+                            IsSelected = true;
                         }
                     }
                     else
