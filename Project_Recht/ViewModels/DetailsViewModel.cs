@@ -19,7 +19,6 @@ namespace Project_Recht.ViewModels
         private IUnitOfWork Uow { get; set; }
         private ObservableCollection<Jurylid> _leden;
         private Jurylid _jurylid;
-
         public List<Jury> Jury
         {
             get;
@@ -35,7 +34,7 @@ namespace Project_Recht.ViewModels
             {
                 _jurylid = value;
                 Selected();
-                NotifyPropertyChanged();
+
             }
         }
 
@@ -48,7 +47,7 @@ namespace Project_Recht.ViewModels
             set
             {
                 _leden = value;
-                NotifyPropertyChanged();
+
             }
         }
         public string Voornaam
@@ -60,7 +59,7 @@ namespace Project_Recht.ViewModels
             set
             {
                 _voornaam = value;
-                NotifyPropertyChanged();
+
             }
         }
 
@@ -73,10 +72,13 @@ namespace Project_Recht.ViewModels
             set
             {
                 _achternaam = value;
-                NotifyPropertyChanged();
+
             } 
         }
+        public Rechtzaak Rechtzaak { get; set; } = new Rechtzaak();
 
+        //gaat de juryleden instellen aan de hand van een id en voegt deze toe aan de property leden
+        //zet ook al een nieuw jurylid klaar
         public void JuryInstellen(int id)
         {
             Jury = Uow.JuryRepo.Ophalen(x => x.RechtzaakID == id).ToList();
@@ -88,7 +90,7 @@ namespace Project_Recht.ViewModels
             Jurylid = new Jurylid();
         }
 
-        public Rechtzaak Rechtzaak { get; set; } = new Rechtzaak();
+   
 
         public DetailsViewModel(IUnitOfWork uow,int id)
         {
@@ -109,14 +111,15 @@ namespace Project_Recht.ViewModels
 
             get
             {
+                string melding = "* Verplicht veld";
                 if (columnName =="Voornaam" && string.IsNullOrWhiteSpace(Voornaam))
                 {
-                    return "Voornaam mag niet leeg zijn";
+                    return melding;
                 }
 
                 if (columnName == "Achternaam" && string.IsNullOrWhiteSpace(Achternaam))
                 {
-                    return "Achternaam mag niet leeg zijn";
+                    return melding;
                 }
                 return "";
             }
@@ -149,13 +152,25 @@ namespace Project_Recht.ViewModels
                 }
                 else
                 {
+                    string volledigeNaam = Jurylid.VolledigeNaam;
                     Jurylid.Voornaam = Voornaam;
                     Jurylid.Achternaam = Achternaam;
-                    Uow.JurylidRepo.Aanpassen(Jurylid);
-                    Uow.Save();
-                    dialog.ToonMessageBox("Aanpassing was succesvol! Instellingen worden gereset.");
-                    //hergebruik methode
-                    JuryInstellen(Rechtzaak.RechtzaakID);
+                    if (volledigeNaam != Jurylid.VolledigeNaam)
+                    {
+                        Uow.JurylidRepo.Aanpassen(Jurylid);
+                        int ok = Uow.Save();
+                        if (ok > 0)
+                        {
+                            dialog.ToonMessageBox("Aanpassing was succesvol! Instellingen worden gereset.");
+                            //hergebruik methode
+                            JuryInstellen(Rechtzaak.RechtzaakID);
+                        }
+                    }
+                    else
+                    {
+                        dialog.ToonMessageBox("Eerst iets werkelijk veranderen!");
+                    }
+                    
                 }
             }
            
@@ -183,9 +198,13 @@ namespace Project_Recht.ViewModels
                         Jurylid.Opgeroepen = false;
                         Uow.JurylidRepo.Aanpassen(Jurylid);
                     }
-                    Uow.Save();
-                    dialog.ToonMessageBox("Verwijdering voltooid!");
-                    JuryInstellen(Rechtzaak.RechtzaakID);
+                    int ok = Uow.Save();
+                    if (ok > 0)
+                    {
+                        dialog.ToonMessageBox("Verwijdering voltooid!");
+                        JuryInstellen(Rechtzaak.RechtzaakID);
+                    }
+                    
                 }
                 else
                 {

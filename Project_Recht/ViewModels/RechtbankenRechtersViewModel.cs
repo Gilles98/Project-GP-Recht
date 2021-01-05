@@ -34,9 +34,9 @@ namespace Project_Recht.ViewModels
             {
                 _treeItem = value;
                 OperatieOpenen("");
-                NotifyPropertyChanged();
             }
         }
+        // view wordt hergebruikt voor als ik dus ik bind de titels en de buttons ook al direct met properties
         public string Title { get; set; }
         public string Command1 => "Operaties\nRechter";
 
@@ -54,7 +54,6 @@ namespace Project_Recht.ViewModels
             {
                 _control = value;
 
-                NotifyPropertyChanged();
             }
         }
         public ObservableCollection<TreeViewItem> Tree
@@ -66,7 +65,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _tree = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -80,7 +78,6 @@ namespace Project_Recht.ViewModels
             {
                 _rechtbanken = value;
                 BouwBoom();
-                NotifyPropertyChanged();
             }
         }
 
@@ -99,6 +96,9 @@ namespace Project_Recht.ViewModels
         //gaat de lijst van Tree opvullen met treeviewitems
         public void BouwBoom()
         {
+            //hierarchie bepalen. eerst een parent maken voor de rechtbank en dan aan de parent rechters toevoegen
+
+            //Tag = ID van de instantie dit maakt het doorgeven aan een constructor heel makkelijk
             foreach (var rechtbank in Rechtbanken)
             {
                 TreeViewItem parent = new TreeViewItem() { Header = rechtbank.Naam, Tag = rechtbank.RechtbankID, Name = "Rechtbank" };
@@ -106,6 +106,7 @@ namespace Project_Recht.ViewModels
                 {
                     parent.Items.Add(new TreeViewItem() { Header = "Rechter - " + rechter.Voornaam + " " + rechter.Achternaam, Tag = rechter.RechterID, Name = "Rechter" });
                 }
+                //parent met zijn rechters toevoegen aan de tree
                 Tree.Add(parent);
             }
         }
@@ -117,34 +118,40 @@ namespace Project_Recht.ViewModels
             update.UpdateTree += UpdateBoom;
             if (TreeItem.IsSelected)
             {
-                    
+                    //als er een rechtbank is geselecteerd
                     if (TreeItem.Name == "Rechtbank")
                     {
                         Control = new OperatiesRechtbank();
                         Control.DataContext = new OperatiesRechtbankViewModel((int)TreeItem.Tag, uow, update);
                     }
+                    //als er een rechter is geselecteerd
                     else
                     {
                         Control = new OperatiesRechter();
-                        Control.DataContext = new OperatiesRechterViewModel((int)TreeItem.Tag, uow, UpdateBoom);
+                        Control.DataContext = new OperatiesRechterViewModel((int)TreeItem.Tag, uow, update);
                     }
             }
             else
             {
+                //wanneer er op de knop voor een rechtbank wordt gedrukt
                 if (keuze == "Rechtbank")
                 {
                     Control = new OperatiesRechtbank();
                     Control.DataContext = new OperatiesRechtbankViewModel(uow, update);
                 }
+                //wanneer er op de knop voor een rechter wordt gedrukt
                 else
                 {
                     Control = new OperatiesRechter();
-                    Control.DataContext = new OperatiesRechterViewModel(uow, UpdateBoom);
+                    Control.DataContext = new OperatiesRechterViewModel(uow, update);
                 }
             }
+            //tree herinstellen
             TreeItemHerinstellen();
 
         }
+
+        //methode om de boom te updaten
         public void UpdateBoom()
         {
             Tree = new ObservableCollection<TreeViewItem>();
@@ -155,6 +162,7 @@ namespace Project_Recht.ViewModels
             }
         }
 
+        //ok een lijntje maar toch in een methode gestopt
         public void TreeItemHerinstellen()
         {
             TreeItem.IsSelected = false;

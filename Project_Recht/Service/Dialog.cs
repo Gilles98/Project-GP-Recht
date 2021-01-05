@@ -9,6 +9,7 @@ namespace Project_Recht.Service
 {
     public class Dialog: IDialog
     {
+        //om de messageboxes op te roepen
         public void ToonMessageBox(string bericht)
         {
             MessageBox.Show(bericht);

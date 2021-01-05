@@ -26,6 +26,7 @@ namespace Project_Recht.ViewModels
         private string _huisnummer;
         private int _postcode;
         IUnitOfWork Uow { get; set; }
+        public bool EnabledVerwijderen { get; set; }
         public string Voornaam
         {
             get
@@ -35,7 +36,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _voornaam = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -48,7 +48,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _achternaam = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -61,7 +60,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _gemeente = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -74,7 +72,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _straat = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -87,7 +84,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _huisnummer = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -100,7 +96,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _postcode = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -114,7 +109,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _enabledBeklaagde = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -127,7 +121,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _enabledAanklager = value;
-                NotifyPropertyChanged();
             }
         }
         public bool CheckRadio1
@@ -144,7 +137,6 @@ namespace Project_Recht.ViewModels
                 {
                     CheckRadio2 = false;
                 }
-                NotifyPropertyChanged();
 
             }
         }
@@ -163,7 +155,6 @@ namespace Project_Recht.ViewModels
                 {
                     CheckRadio1 = false;
                 }
-                NotifyPropertyChanged();
 
             }
         }
@@ -177,7 +168,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _persoon = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -186,38 +176,36 @@ namespace Project_Recht.ViewModels
         {
             get
             {
-                try
-                {
-                    if (columnName == "Postcode" && Postcode == 0)
-                    {
-                        return "* Geef de postcode in";
-                    }
+                    string verplichtMelding = "* Verplicht veld";
+
                     if (columnName == "Postcode" && Postcode < 1000 || Postcode > 9999)
                     {
                         return "* Een postcode ligt tussen 1000 en 9999";
                     }
 
-                    var lijst = this.GetType().GetProperties().ToList();
-
-                    for (int i = 0; i <= lijst.Count - 1; i++)
+                    if (columnName == "Voornaam" && string.IsNullOrWhiteSpace(Voornaam))
                     {
-                        if (lijst[i].Name == "Item")
-                        {
-                            lijst.Remove(lijst[i]);
-                        }
-                        if (lijst[i].Name == columnName && lijst[i].GetValue(this, null) == null || (string)lijst[i].GetValue(this, null) == "")
-                        {
-                            return "* Verplicht veld";
-                        }
-
+                        return verplichtMelding;
                     }
-                }
+                    if (columnName == "Achternaam" && string.IsNullOrWhiteSpace(Achternaam))
+                    {
+                        return verplichtMelding;
+                    }
 
-                catch (Exception ex)
-                {
-                    Foutlogger.FoutLoggen(ex);
+                    if (columnName == "Straat" && string.IsNullOrWhiteSpace(Straat))
+                    {
+                        return verplichtMelding;
+                    }
 
-                }
+                    if (columnName == "Gemeente" && string.IsNullOrWhiteSpace(Gemeente))
+                    {
+                        return verplichtMelding;
+                    }
+
+                    if (columnName == "Huisnummer" && string.IsNullOrWhiteSpace(Huisnummer))
+                    {
+                    return verplichtMelding;
+                    }
                 return "";
             }
         }
@@ -260,38 +248,107 @@ namespace Project_Recht.ViewModels
         {
             PropertiesInstellen(persoon);
             this.Uow = unitOfWork;
+            EnabledVerwijderen = true;
         }
 
         public override bool CanExecute(object parameter)
         {
+            switch (parameter.ToString())
+            {
+                case "Verwijderen":
+                    //beschikbaareid van de verwijder knop instellen
+                    if (EnabledVerwijderen)
+                    {
+                        return true;
+                    }
+                    return false;
+            }
             return true;
         }
-        public void Verwijderen()
+        //kijken in hoeveel zaken de persoon nog actief is. meer dan 1 betekent dat er eerst een rechtzaak moet aflopen of moet worden verwijderd
+        public int CheckAantalZaken()
         {
+            //teller 
+            int check = 0;
+
             if (Persoon is Beklaagde beklaagde)
             {
-                //manuele cascade
-                var fkRelatie = Uow.RechtzaakBeklaagdeRepo.Ophalen(x => x.BeklaagdeID == beklaagde.BeklaagdeID).SingleOrDefault();
-                if (fkRelatie != null)
+                var relatie = Uow.RechtzaakBeklaagdeRepo.Ophalen(x => x.BeklaagdeID == beklaagde.BeklaagdeID);
+                if (relatie.Count() > 0 )
                 {
-                    Uow.RechtzaakBeklaagdeRepo.Verwijderen(fkRelatie);
+                    foreach (var item in relatie)
+                    {
+                        check++;
+                    }
                 }
-                Uow.BeklaagdeRepo.Verwijderen((Beklaagde)Persoon);
+                
+
             }
             if (Persoon is Aanklager aanklager)
             {
-                //manuele cascade
-                var fkRelatie = Uow.RechtzaakAanklagerRepo.Ophalen(x => x.AanklagerID == aanklager.AanklagerID).SingleOrDefault();
-                if (fkRelatie != null)
+                var relatie = Uow.RechtzaakAanklagerRepo.Ophalen(x => x.AanklagerID == aanklager.AanklagerID);
+                if (relatie.Count() > 0)
                 {
-                    Uow.RechtzaakAanklagerRepo.Verwijderen(fkRelatie);
+                    foreach (var item in relatie)
+                    {
+                        check++;
+                    }
                 }
-                Uow.AanklagerRepo.Verwijderen((Aanklager)Persoon);
+                
             }
-            Uow.Save();
-            StaticPersoon.Updaten();
-            dialog.ToonMessageBox("De persoon is succesvol uit de rechtzaak verwijderd!");
+            return check;
+        }
+        public void Verwijderen()
+        {
+            //aantal lopende zaken checken
+            if (CheckAantalZaken() <= 1)
+            {
+                //check of het een beklaagde is
+                if (Persoon is Beklaagde beklaagde)
+                {
+
+                    //manuele cascade
+                    var fkRelatie = Uow.RechtzaakBeklaagdeRepo.Ophalen(x => x.BeklaagdeID == beklaagde.BeklaagdeID).SingleOrDefault();
+                    if (fkRelatie != null)
+                    {
+                        Uow.RechtzaakBeklaagdeRepo.Verwijderen(fkRelatie);
+                    }
+
+                    Uow.BeklaagdeRepo.Verwijderen((Beklaagde)Persoon);
+                }
+                //check of het een aanklager is
+                if (Persoon is Aanklager aanklager)
+                {
+                    //manuele cascade
+                    var fkRelatie = Uow.RechtzaakAanklagerRepo.Ophalen(x => x.AanklagerID == aanklager.AanklagerID).SingleOrDefault();
+                    if (fkRelatie != null)
+                    {
+                        Uow.RechtzaakAanklagerRepo.Verwijderen(fkRelatie);
+                    }
+                    Uow.AanklagerRepo.Verwijderen((Aanklager)Persoon);
+                }
+                Uow.Save();
+                StaticHelper.Updaten(Persoon);
+                dialog.ToonMessageBox("De persoon is succesvol verwijderd!");
+            }
+            //wanneer een persoon meer dan 1 zaak heeft lopen
+            else
+            {
+                dialog.ToonMessageBox("Deze persoon is bij meer dan 1 rechtzaak betrokken en mag niet verwijderd worden. verwijder een aantal rechtzaken tot er 1 overblijft of wacht af");
+            }
+           
             
+        }
+        //methode om de properties te resetten
+        public void Reset()
+        {
+            Persoon = new object();
+            Voornaam = "";
+            Achternaam = "";
+            Postcode = 0;
+            Huisnummer = "";
+            Straat = "";
+            Gemeente = "";
         }
         public void Bewaren()
         {
@@ -301,28 +358,34 @@ namespace Project_Recht.ViewModels
                 {
                     if (Persoon is Aanklager aanklager)
                     {
+                        //aanklager instellen
                         aanklager.Voornaam = Voornaam;
                         aanklager.Achternaam = Achternaam;
                         aanklager.Postcode = Postcode;
                         aanklager.Straat = Straat;
                         aanklager.HuisNr = Huisnummer;
                         aanklager.Gemeente = Gemeente;
+
+                        //toevoegen aan lijst en database
                         Uow.AanklagerRepo.Aanpassen(aanklager);
                         Uow.Save();
-                        StaticPersoon.LijstAanpassen(aanklager);
+                        StaticHelper.LijstAanpassen(aanklager);
                         dialog.ToonMessageBox("Aanklager is aangepast!");
                     }
                    else if (Persoon is Beklaagde beklaagde)
                     {
+                        //beklaagde aanpassen
                         beklaagde.Voornaam = Voornaam;
                         beklaagde.Achternaam = Achternaam;
                         beklaagde.Postcode = Postcode;
                         beklaagde.Straat = Straat;
                         beklaagde.HuisNr = Huisnummer;
                         beklaagde.Gemeente = Gemeente;
+
+                        //toevoegen aan lijst en database
                         Uow.BeklaagdeRepo.Aanpassen(beklaagde);
                         Uow.Save();
-                        StaticPersoon.LijstAanpassen(beklaagde);
+                        StaticHelper.LijstAanpassen(beklaagde);
                         dialog.ToonMessageBox("Beklaagde is aangepast!");
                     }
                     else
@@ -330,25 +393,23 @@ namespace Project_Recht.ViewModels
                         if (CheckRadio1)
                         {
                             Persoon = new Beklaagde() { Achternaam = Achternaam, Voornaam = Voornaam, Gemeente = Gemeente, HuisNr = Huisnummer, Straat = Straat, Postcode = Postcode };
-                            
-                            //controle of dat de persoon al in de database is opgenomen
+
+                            //checkt of de aanklager al bestaat
                             var checkPersoon = Uow.BeklaagdeRepo.Ophalen(x => x.Voornaam == Voornaam && x.Achternaam == Achternaam).SingleOrDefault();
                             if (checkPersoon == null)
                             {
-                                                            //wordt al toegevoegd aan de database. bij opslagen van de rechtzaak wordt elke beklaagde of aanklager aan de rechtzaak gelinked
+                             //wordt al toegevoegd aan de database. bij opslagen van de rechtzaak wordt elke beklaagde of aanklager aan de rechtzaak gelinked
                                 Uow.BeklaagdeRepo.Toevoegen((Beklaagde)Persoon);
                                 Uow.Save();
-                                StaticPersoon.KrijgBeklaagdes((Beklaagde)Persoon);
+                                StaticHelper.KrijgBeklaagdes((Beklaagde)Persoon);
                             }
                             else
                             {
-                                StaticPersoon.KrijgBeklaagdes(checkPersoon);
+                                //enkel toegevoegd aan de lijst
+                                StaticHelper.KrijgBeklaagdes(checkPersoon);
                             }
-
-
-
-                            Persoon = new object();
-                            dialog.ToonMessageBox("Er is een beklaagde toegevoegd!");
+                            Reset();
+                            dialog.ToonMessageBox("Er is een beklaagde toegevoegd!\nslaag de rechtzaak op om hem officieel te linken aan de rechtzaak");
                         }
                         else if (CheckRadio2)
                         {
@@ -356,22 +417,23 @@ namespace Project_Recht.ViewModels
                            
 
                             var checkPersoon = Uow.AanklagerRepo.Ophalen(x => x.Voornaam == Voornaam && x.Achternaam == Achternaam).SingleOrDefault();
-
+                            //checkt of de aanklager al bestaat
                             if (checkPersoon == null)
                             {
                                 //wordt al toegevoegd aan de database. bij opslagen van de rechtzaak wordt elke beklaagde of aanklager aan de rechtzaak gelinked
                                 Uow.AanklagerRepo.Toevoegen((Aanklager)Persoon);
                                 Uow.Save();
-                                StaticPersoon.KrijgAanklagers((Aanklager)Persoon);
+                                StaticHelper.KrijgAanklagers((Aanklager)Persoon);
                             }
 
                             else
                             {
-                                StaticPersoon.KrijgAanklagers(checkPersoon);
+                                //enkel toegevoegd aan lijst
+                                StaticHelper.KrijgAanklagers(checkPersoon);
                             }
-                           
-                            Persoon = new object();
-                            dialog.ToonMessageBox("Er is een aanklager toegevoegd!");
+                            //resetten
+                            Reset();
+                            dialog.ToonMessageBox("Er is een aanklager toegevoegd!\nslaag de rechtzaak op om hem officieel te linken aan de rechtzaak");
                         }
                         else
                         {

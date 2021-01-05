@@ -16,11 +16,10 @@ namespace Project_Recht.ViewModels
 {
     public class OperatiesRechterViewModel : Basis
     {
-        //private RechtersRechtbanken context = (RechtersRechtbanken)Application.Current.Windows[1];
         private Rechtbank _selectedRechtbank;
         private ObservableCollection<Rechtbank> _rechtbanken;
         private Rechter _rechter;
-        private readonly Action action;
+        private readonly ITreeUpdate action;
         private Service.IDialog dialog = new Dialog();
 
 
@@ -28,37 +27,24 @@ namespace Project_Recht.ViewModels
         private string _achternaam;
 
         private IUnitOfWork Uow { get; set; }
-        public string erd;
+
 
         public override string this[string columnName]
         {
 
             get
             {
-                try
+                string melding = "* Verplicht veld";
+                if (columnName == "Voornaam" && string.IsNullOrWhiteSpace(Voornaam))
                 {
-
-                    var lijst = this.GetType().GetProperties().ToList();
-                    
-                    for (int i = 0; i <= lijst.Count - 1; i++)
-                    {
-                        if (lijst[i].Name == "Item" || lijst[i].Name == "SelectedRechtbank")
-                        {
-                            ///item wordt mee gegenereerd dus deze wordt gefilterd net zoals SelectedRechtbank om daar geen verwarring in te krijgen
-                            lijst.Remove(lijst[i]);
-                        }
-                        if (lijst[i].Name == columnName && lijst[i].GetValue(this, null) == null || (string)lijst[i].GetValue(this, null)== "")
-                        {
-                            return "* Verplicht veld";
-                        }
-                    }
+                    return melding;
                 }
 
-                catch (Exception ex)
+                if (columnName == "Achternaam" && string.IsNullOrWhiteSpace(Achternaam))
                 {
-                    Foutlogger.FoutLoggen(ex);
+                    return melding;
                 }
-                if (columnName =="SelectedRechtbank" && SelectedRechtbank == null)
+                if (columnName == "SelectedRechtbank" && SelectedRechtbank == null)
                 {
                     return "* Selecteer een rechtbank";
                 }
@@ -69,7 +55,7 @@ namespace Project_Recht.ViewModels
         }
 
 
-      
+
         public string Voornaam
         {
             get
@@ -79,7 +65,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _voornaam = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -92,7 +77,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _achternaam = value;
-                NotifyPropertyChanged();
             }
         }
         public Rechter Rechter
@@ -105,7 +89,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _rechter = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -119,7 +102,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _selectedRechtbank = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -137,59 +119,58 @@ namespace Project_Recht.ViewModels
         }
 
 
-        public OperatiesRechterViewModel(IUnitOfWork unitOfWork, Action parentAction)
+        public OperatiesRechterViewModel(IUnitOfWork unitOfWork, ITreeUpdate parentAction)
         {
+            //gaat interface instellen aan de hand van de meegegeven parameter
             this.action = parentAction;
             Uow = unitOfWork;
             Rechter = new Rechter();
             Rechtbanken = new ObservableCollection<Rechtbank>(Uow.RechtbankRepo.Ophalen());
         }
 
-        public OperatiesRechterViewModel(int id, IUnitOfWork unitOfWork, Action parentAction)
+        public OperatiesRechterViewModel(int id, IUnitOfWork unitOfWork, ITreeUpdate parentAction)
         {
+            //gaat interface instellen aan de hand van de meegegeven parameter
             this.action = parentAction;
             this.Uow = unitOfWork;
             Rechter = Uow.RechterRepo.ZoekOpPK(id);
             Rechtbanken = new ObservableCollection<Rechtbank>(Uow.RechtbankRepo.Ophalen());
+            //properties instellen
             PropertiesInstellen();
         }
 
-
+        //rechter instellen
         public void RechterInstellen()
         {
             Rechter.Voornaam = Voornaam;
             Rechter.Achternaam = Achternaam;
             Rechter.RechtbankID = SelectedRechtbank.RechtbankID;
         }
-
+        //properties resetten
         public void Reset()
         {
+
             SelectedRechtbank = null;
             Voornaam = "";
             Achternaam = "";
             Rechter = new Rechter();
         }
-
+        //properties instellen
         public void PropertiesInstellen()
         {
             Voornaam = Rechter.Voornaam;
             Achternaam = Rechter.Achternaam;
             SelectedRechtbank = Uow.RechtbankRepo.Ophalen(x => x.RechtbankID == Rechter.RechtbankID).SingleOrDefault();
-          
+
         }
 
-        public override bool CanExecute(object parameter)
-        {
-            return true;
-        }
+        
         public void Verwijderen()
         {
-            ///controle doen of dat de rechter nog rechtzaken heeft!
-
-            if (Rechter.RechterID > 0)
-            {
-                if (dialog.ToonMessageBoxPlusReturnAntwoord("Deze rechter heeft mogelijk nog rechtzaken. Bent u zeker dat u hem wil verwijderen?", "Melding"))
+                //de vraagstellen of dat de rechter nog rechtzaken heeft lopen
+                if (dialog.ToonMessageBoxPlusReturnAntwoord("Deze rechter heeft mogelijk nog rechtzaken. Bent u zeker dat u deze rechter wil verwijderen?", "Melding"))
                 {
+                //cascade regelen tot lijn 210
                     var rechtzaken = Uow.RechtzaakRepo.Ophalen(x => x.RechterID == Rechter.RechterID);
                     if (rechtzaken.Count() > 0)
                     {
@@ -208,58 +189,60 @@ namespace Project_Recht.ViewModels
                         }
                         Uow.RechtzaakRepo.VerwijderenRange(rechtzaken);
                     }
-                    
+
                     Uow.RechterRepo.Verwijderen(Rechter);
+                    //veiligheidscheck
                     int ok = Uow.Save();
                     if (ok > 0)
                     {
                         Reset();
-                        action.Invoke();
+                        action.Update();
                     }
                 }
-            }
-
-
+  
         }
         public void Bewaren()
         {
             if (this.IsGeldig())
             {
+                //rechter instellen
                 RechterInstellen();
-          
 
-            if (Rechter.RechterID <= 0)
-            {
-
-                if (SelectedRechtbank != null)
+                if (Rechter.RechterID <= 0)
                 {
-                    Rechter.RechtbankID = SelectedRechtbank.RechtbankID;
-                    if (Rechter.Voornaam != "")
+                    //rechtbankID instellen
+                    Uow.RechterRepo.Toevoegen(Rechter);
+                    int ok = Uow.Save();
+                    if (ok > 0)
                     {
-                        if (Rechter.Achternaam != "")
-                        {
-                            Uow.RechterRepo.Toevoegen(Rechter);
-                            int ok = Uow.Save();
-                            if (ok > 0)
-                            {
-                                action.Invoke();
-                            }
-                        }
+                        action.Update();
+                        //resetten
+                        Reset();
+                    }
+                }
+                else
+                {
+                    Uow.RechterRepo.Aanpassen(Rechter);
+                    int ok = Uow.Save();
+                    if (ok > 0)
+                    {
+                        action.Update();
                     }
                 }
             }
-            else
+        }
+        public override bool CanExecute(object parameter)
+        {
+            //aan de hand van of dat de rechter leeg is of niet kan ik verwijderen
+            if (parameter.ToString() == "Verwijderen")
             {
-                Uow.RechterRepo.Aanpassen(Rechter);
-                int ok = Uow.Save();
-                if (ok > 0)
+                if (Rechter == null || Rechter.RechterID <= 0)
                 {
-                    action.Invoke();
+                    return false;
                 }
             }
-            }
+            return true;
         }
-
         public override void Execute(object parameter)
         {
             switch (parameter.ToString())

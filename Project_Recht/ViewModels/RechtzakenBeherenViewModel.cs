@@ -4,7 +4,6 @@ using Project_Recht.UserControls;
 using Project_Recht_DAL;
 using Project_Recht_DAL.UnitOfWork;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
@@ -33,7 +32,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _enableDetails = value;
-                NotifyPropertyChanged();
             }
         }
         public TreeViewItem TreeItem
@@ -45,9 +43,10 @@ namespace Project_Recht.ViewModels
             set
             {
                 _treeItem = value;
-                NotifyPropertyChanged();
             }
         }
+        // view wordt hergebruikt voor als ik dus ik bind de titels en de buttons ook al direct met properties
+       
         public string Title { get; set; }
         public string Command1 => "Rechtzaak\nbeheren";
 
@@ -64,8 +63,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _control = value;
-
-                NotifyPropertyChanged();
             }
         }
         public ObservableCollection<TreeViewItem> Tree
@@ -77,7 +74,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _tree = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -91,7 +87,6 @@ namespace Project_Recht.ViewModels
             {
                 _rechtbanken = value;
                 BouwBoom();
-                NotifyPropertyChanged();
             }
         }
 
@@ -102,7 +97,8 @@ namespace Project_Recht.ViewModels
             Title = "Rechtzaken beheren";
             Tree = new ObservableCollection<TreeViewItem>();
             TreeItem = new TreeViewItem();
-            Rechtbanken = new ObservableCollection<Rechtbank>(uow.RechtbankRepo.Ophalen(y => y.Rechtzaken));
+            //enkel de rechtbanken met een rechtzaak worden opgehaald
+            Rechtbanken = new ObservableCollection<Rechtbank>(uow.RechtbankRepo.Ophalen(x => x.Rechtzaken.Count > 0, includes:y => y.Rechtzaken));
             IntroRechtzaken intro = new IntroRechtzaken();
             Control = intro;
         }
@@ -110,6 +106,9 @@ namespace Project_Recht.ViewModels
         //gaat de lijst van Tree opvullen met treeviewitems
         public void BouwBoom()
         {
+            //hierarchie bepalen. eerst een parent maken voor de rechtbank en dan aan de parent rechtzaken toevoegen
+
+            //Tag = ID van de instantie dit maakt het doorgeven aan een constructor heel makkelijk
             foreach (var rechtbank in Rechtbanken)
             {
                 TreeViewItem parent = new TreeViewItem() { Header = rechtbank.Naam };
@@ -117,6 +116,7 @@ namespace Project_Recht.ViewModels
                 {
                     parent.Items.Add(new TreeViewItem() { Header = "Rechtzaak - " + rechtzaak.Code, Tag = rechtzaak.RechtzaakID, });
                 }
+                //parent met zijn rechtzaken toevoegen aan de tree
                 Tree.Add(parent);
             }
         }
@@ -126,6 +126,7 @@ namespace Project_Recht.ViewModels
 
             if (keuze == "Details")
             {
+                //aan de hand van een selected item wordt er een actie uitgevoerd
                 if (!TreeItem.IsSelected)
                 {
                     dialog.ToonMessageBox("Eerst een rechtzaak selecteren!");
@@ -134,8 +135,19 @@ namespace Project_Recht.ViewModels
                 {
                     ///details view openen
                     Details usc = new Details();
-                    usc.DataContext = new DetailsViewModel(uow, (int)TreeItem.Tag);
-                    Control = usc;
+                    ///controle op hierarchie selectie
+                    if (TreeItem.Header.ToString().Contains("Rechtzaak -"))
+                    {
+                        usc.DataContext = new DetailsViewModel(uow, (int)TreeItem.Tag);
+                        Control = usc;
+
+                    }
+                    else
+                    {
+                        Service.IDialog dialog = new Service.Dialog();
+                        dialog.ToonMessageBox("U moet een rechtzaak selecteren en geen rechtbank!");
+                    }
+                    
                 }
             }
 
@@ -143,6 +155,8 @@ namespace Project_Recht.ViewModels
             {
                 RechtzaakBeheren view = new RechtzaakBeheren();
                 OperatieRechtzaakBeherenViewModel vm = null;
+
+                //aan de hand van de header naam wordt er een viewmodel ingesteld
                 if (keuze == "Rechtzaak" && TreeItem.IsSelected && TreeItem.Header.ToString().Contains("Rechtzaak -"))
                 {
                      vm = new OperatieRechtzaakBeherenViewModel(uow, true, (int)TreeItem.Tag);  
@@ -151,11 +165,15 @@ namespace Project_Recht.ViewModels
                 {
                     vm = new OperatieRechtzaakBeherenViewModel(uow, false);
                 }
-                //gaat event instellen zodat de window geclosed wordt als een rechtzaak is verwijderd, aangepast of aangemaakt
-                vm.CloseWindow += (s, e) => view.Close();
+
+                //gaat event in interface instellen zodat de window geclosed wordt als een rechtzaak is verwijderd, aangepast of aangemaakt
+                vm.Closer = new Close();
+                vm.Closer.CloseWindow += (s, e) => view.Close();
                 view.DataContext = vm;
 
                 view.ShowDialog();
+
+                //als de view gesloten is alles updaten
                 TreeItemHerinstellen();
                 UpdateBoom();
             }
@@ -164,13 +182,16 @@ namespace Project_Recht.ViewModels
 
 
         }
+
+        //methode om de treeview te updaten
         public void UpdateBoom()
         {
             Tree = new ObservableCollection<TreeViewItem>();
-            Rechtbanken = new ObservableCollection<Rechtbank>(uow.RechtbankRepo.Ophalen(x => x.Rechtzaken));
+            Rechtbanken = new ObservableCollection<Rechtbank>(uow.RechtbankRepo.Ophalen(x => x.Rechtzaken.Count > 0, includes: y => y.Rechtzaken));
             
         }
 
+        //gaat treeview herinstellen
         public void TreeItemHerinstellen()
         {
             TreeItem.IsSelected = false;

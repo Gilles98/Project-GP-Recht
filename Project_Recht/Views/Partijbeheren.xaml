@@ -1,0 +1,47 @@
+﻿<Window x:Class="Project_Recht.Partijbeheren"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+          xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit" 
+        xmlns:local="clr-namespace:Project_Recht"
+        mc:Ignorable="d"
+          xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+     TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+     TextElement.FontWeight="Regular"
+     TextElement.FontSize="13"
+     TextOptions.TextFormattingMode="Ideal"
+     TextOptions.TextRenderingMode="Auto"
+     Background="{DynamicResource MaterialDesignPaper}"
+     FontFamily="{DynamicResource MaterialDesignFont}"
+        Title="Partijbeheren" Height="450" Width="650" ResizeMode="CanMinimize">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Grid.ColumnSpan="2" Background="Blue" Margin="0,0,-0.4,0" >
+            <TextBlock Text="Partij Beheren" FontSize="45" TextAlignment="Center"  Background="Blue" Foreground="White" Margin="0,0,-0.4,0" />
+        </StackPanel>
+
+        <RadioButton GroupName="Rechtspersoon"  Content="Beklaagde" IsChecked="{Binding CheckRadio1}" IsEnabled="{Binding EnabledBeklaagde}" Grid.Column="0" Grid.Row="1" FontSize="15" Margin="214,0,9.6,53" Grid.RowSpan="2" Height="75" VerticalAlignment="Bottom" />
+        <RadioButton GroupName="Rechtspersoon"  Content="Aanklager" IsChecked="{Binding CheckRadio2}" IsEnabled="{Binding EnabledAanklager}" Grid.Column="1" Grid.Row="1" FontSize="15" Margin="10.4,0,198.2,53.2" Grid.RowSpan="2"/>
+        <TextBox  Grid.Row="2" FontSize="16" Grid.Column="0" Text="{Binding Voornaam, ValidatesOnDataErrors=True}" materialDesign:HintAssist.Hint="Voornaam" Margin="130,10.4,78.6,10.2"/>
+        <TextBox  Grid.Row="2" FontSize="16" Grid.Column="1" Text="{Binding Achternaam, ValidatesOnDataErrors=True}" materialDesign:HintAssist.Hint="Achternaam" Margin="68.4,10.4,140.2,10.2"/>
+        <TextBox  Grid.Row="3" FontSize="16" Grid.Column="0" Text="{Binding Gemeente, ValidatesOnDataErrors=True}" materialDesign:HintAssist.Hint="Gemeente" Margin="130,10.4,78.6,10.2"/>
+        <TextBox  Grid.Row="3" FontSize="16" Grid.Column="1" Text="{Binding Straat, ValidatesOnDataErrors=True}" materialDesign:HintAssist.Hint="Straat" Margin="68.4,10.4,140.2,10.2"/>
+        <TextBox Grid.Row="4" FontSize="16" Grid.Column="0" Text="{Binding Huisnummer, ValidatesOnDataErrors=True}" materialDesign:HintAssist.Hint="Huisnummer" Margin="130,10.4,78.6,10.2"/>
+        <TextBox Grid.Row="4" FontSize="16"  Grid.Column="1" Text="{Binding Postcode, ValidatesOnDataErrors=True}" materialDesign:HintAssist.Hint="Postcode" Margin="68.4,10.4,140.2,10.2"/>
+        <Button Background="Navy" Grid.Column="0" Grid.Row="6" Content="Verwijderen" Command="{Binding}" CommandParameter="Verwijderen"  Margin="5"/>
+        <Button Background="Navy" Grid.Column="1" Grid.Row="6" Content="Bewaren" Command="{Binding}" CommandParameter="Bewaren"  Margin="5"/>
+    </Grid>
+</Window>

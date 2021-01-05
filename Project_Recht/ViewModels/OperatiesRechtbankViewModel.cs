@@ -17,51 +17,46 @@ namespace Project_Recht.ViewModels
         Service.IDialog dialog = new Service.Dialog();
         private readonly ITreeUpdate action;
         private IUnitOfWork Uow { get; set; }
-        public string erd;
 
         private string _naam;
         private string _gemeente;
         private string _straat;
         private string _huisnummer;
         private int _postcode;
+
+
         public override string this[string columnName]
         {
 
             get
             {
-                try
+                string melding = "* Verplicht veld";
+                if (columnName == "Postcode" && Postcode == 0)
                 {
-                    if (columnName == "Postcode" && Postcode == 0)
-                    {
-                        return "* Geef de postcode in";
-                    }
-                    if (columnName == "Postcode" && Postcode < 1000 || Postcode > 9999)
-                    {
-                        return "* Een postcode ligt tussen 1000 en 9999";
-                    }
-
-                    var lijst = this.GetType().GetProperties().ToList();
-                    
-                    for (int i = 0; i <= lijst.Count -1; i++)
-                    {
-                        if (lijst[i].Name == "Item" )
-                        {
-                            lijst.Remove(lijst[i]);
-                        }
-                        if (lijst[i].Name == columnName && lijst[i].GetValue(this, null) == null || (string)lijst[i].GetValue(this, null) == "")
-                        {
-                            return "* Verplicht veld";
-                        }
-                        
-                    }
+                    return "* Geef de postcode in";
+                }
+                if (columnName == "Postcode" && Postcode < 1000 || Postcode > 9999)
+                {
+                    return "* Een postcode ligt tussen 1000 en 9999";
+                }
+                if (columnName == "Naam" && string.IsNullOrWhiteSpace(Naam))
+                {
+                    return melding;
                 }
 
-                catch (Exception ex)
+                if (columnName == "Straat" && string.IsNullOrWhiteSpace(Straat))
                 {
-                    Foutlogger.FoutLoggen(ex);
+                    return melding;
                 }
 
-               
+                if (columnName == "Gemeente" && string.IsNullOrWhiteSpace(Gemeente))
+                {
+                    return melding;
+                }
+                if (columnName == "Huisnummer" && string.IsNullOrWhiteSpace(Huisnummer))
+                {
+                    return melding;
+                }
 
                 return "";
             }
@@ -77,7 +72,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _naam = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -90,7 +84,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _gemeente = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -103,7 +96,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _straat = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -117,7 +109,6 @@ namespace Project_Recht.ViewModels
             set
             {
                 _huisnummer = value;
-                NotifyPropertyChanged();
             }
         }
 
@@ -130,20 +121,23 @@ namespace Project_Recht.ViewModels
             set
             {
                 _postcode = value;
-                NotifyPropertyChanged();
             }
         }
-
+        //gaat rechtbank instellen
         public void RechtbankInstellen()
         {
-            Rechtbank = new Rechtbank();
+            if (Rechtbank == null)
+            {
+                Rechtbank = new Rechtbank();
+            }
+
             Rechtbank.Naam = Naam;
             Rechtbank.HuisNr = Huisnummer;
             Rechtbank.Postcode = Postcode;
             Rechtbank.Straat = Straat;
             Rechtbank.Gemeente = Gemeente;
         }
-
+        //gaat resetten 
         public void Reset()
         {
             Rechtbank = new Rechtbank();
@@ -153,7 +147,7 @@ namespace Project_Recht.ViewModels
             Straat = null;
             Gemeente = null;
         }
-
+        //gaat properties instellen
         public void PropertiesInstellen()
         {
             Naam = Rechtbank.Naam;
@@ -173,83 +167,80 @@ namespace Project_Recht.ViewModels
             set
             {
                 _rechtbank = value;
-                NotifyPropertyChanged();
             }
         }
 
 
         public OperatiesRechtbankViewModel(IUnitOfWork unitOfWork, ITreeUpdate parentAction)
         {
+            //interface gelijkstellen aan parameter
             this.action = parentAction;
             Uow = unitOfWork;
         }
 
         public OperatiesRechtbankViewModel(int id, IUnitOfWork unitOfWork, ITreeUpdate parentAction)
         {
-
+            //interface gelijkstellen aan parameter
             this.action = parentAction;
             this.Uow = unitOfWork;
+
+            //instellen van properties
             Rechtbank = Uow.RechtbankRepo.ZoekOpPK(id);
             PropertiesInstellen();
         }
 
-        public override bool CanExecute(object parameter)
-        {
-            return true;
-        }
-        //public string FoutmeldingInstellen()
-        //{
-           
-        //}
+
         public void Verwijderen()
         {
-           
-
-            if (Rechtbank.RechtbankID > 0)
+            // de rechters aanwezig checken
+            if (Rechtbank.Rechters.Count > 0)
             {
-                if (Rechtbank.Rechters.Count > 0)
+                if (dialog.ToonMessageBoxPlusReturnAntwoord("Deze rechtbank bevat nog rechters en rechtzaken, bent u zeker dat u deze wil verwijderen?", "Melding"))
                 {
-                    if (dialog.ToonMessageBoxPlusReturnAntwoord("Deze rechtbank bevat nog rechters en rechtzaken, bent u zeker dat u deze wil verwijderen?", "Melding"))
+                    //tot en met lijn 234 cascade regelen
+                    var rechtzaken = Uow.RechtzaakRepo.Ophalen(x => x.RechtbankID == Rechtbank.RechtbankID);
+                    if (rechtzaken.Count() > 0)
                     {
-                        var rechtzaken = Uow.RechtzaakRepo.Ophalen(x => x.RechtbankID == Rechtbank.RechtbankID);
-                        if (rechtzaken.Count() > 0)
+                        foreach (var item in rechtzaken)
                         {
-                            foreach (var item in rechtzaken)
+                            Uow.RechtzaakAanklagerRepo.VerwijderenRange(Uow.RechtzaakAanklagerRepo.Ophalen(x => x.RechtzaakID == item.RechtzaakID));
+                            Uow.RechtzaakBeklaagdeRepo.VerwijderenRange(Uow.RechtzaakBeklaagdeRepo.Ophalen(x => x.RechtzaakID == item.RechtzaakID));
+                            //jury reset
+                            var jury = Uow.JuryRepo.Ophalen(x => x.RechtzaakID == item.RechtzaakID, includes: x => x.Jurylid);
+                            foreach (var lid in jury)
                             {
-                                Uow.RechtzaakAanklagerRepo.VerwijderenRange(Uow.RechtzaakAanklagerRepo.Ophalen(x => x.RechtzaakID == item.RechtzaakID));
-                                Uow.RechtzaakBeklaagdeRepo.VerwijderenRange(Uow.RechtzaakBeklaagdeRepo.Ophalen(x => x.RechtzaakID == item.RechtzaakID));
-                                //jury reset
-                                var jury = Uow.JuryRepo.Ophalen(x => x.RechtzaakID == item.RechtzaakID, includes: x => x.Jurylid);
-                                foreach (var lid in jury)
-                                {
-                                    lid.Jurylid.Opgeroepen = false;
-                                    Uow.JurylidRepo.Aanpassen(lid.Jurylid);
-                                }
-                                Uow.JuryRepo.VerwijderenRange(jury);
+                                //status jurylid aanpassen
+                                lid.Jurylid.Opgeroepen = false;
+                                Uow.JurylidRepo.Aanpassen(lid.Jurylid);
                             }
-                            Uow.RechtzaakRepo.VerwijderenRange(rechtzaken);
+                            Uow.JuryRepo.VerwijderenRange(jury);
                         }
-                        Uow.RechterRepo.VerwijderenRange(Rechtbank.Rechters);
-                        Uow.RechtbankRepo.Verwijderen(Rechtbank);
-    
-                        int ok = Uow.Save();
-                        if (ok > 0)
-                        {
-                            action.Update();
-                        }
+                        Uow.RechtzaakRepo.VerwijderenRange(rechtzaken);
                     }
-                }
-                else
-                {
+                    Uow.RechterRepo.VerwijderenRange(Rechtbank.Rechters);
                     Uow.RechtbankRepo.Verwijderen(Rechtbank);
+
                     int ok = Uow.Save();
+                    //veiligheidscheck
                     if (ok > 0)
                     {
-                       
+                        //treeview updaten
                         action.Update();
                     }
-                }    
+                }
             }
+            else
+            {
+                Uow.RechtbankRepo.Verwijderen(Rechtbank);
+                int ok = Uow.Save();
+                //veiligheidscheck
+                if (ok > 0)
+                {
+                    //treeview updaten
+                    action.Update();
+                }
+            }
+            //resetten
             Reset();
 
         }
@@ -258,36 +249,47 @@ namespace Project_Recht.ViewModels
             if (this.IsGeldig())
             {
 
-
+                //rechtbank instellen
                 RechtbankInstellen();
+                //controle op id om te bepalen of de rechtbank wordt toegevoegd of aangepast
                 if (Rechtbank.RechtbankID <= 0)
-            {
-                
-
-                if (Rechtbank.Naam != "")
                 {
-                    if (Rechtbank.Gemeente != "")
+
+                    Uow.RechtbankRepo.Toevoegen(Rechtbank);
+                    int ok = Uow.Save();
+                    //veiligheidscheck
+                    if (ok > 0)
                     {
-                        Uow.RechtbankRepo.Toevoegen(Rechtbank);
-                        int ok = Uow.Save();
-                        if (ok > 0)
-                        {
-                            action.Update();
-                        }
+                        //resetten
+                        Reset();
+                        //treeview updaten
+                        action.Update();
                     }
 
                 }
-            }
-            else
-            {
-                Uow.RechtbankRepo.Aanpassen(Rechtbank);
-                int ok = Uow.Save();
-                if (ok > 0)
+                else
                 {
-                    action.Update();
+                    Uow.RechtbankRepo.Aanpassen(Rechtbank);
+                    int ok = Uow.Save();
+                    //veiligheidscheck
+                    if (ok > 0)
+                    {
+                        //treeview updaten
+                        action.Update();
+                    }
                 }
             }
+        }
+        public override bool CanExecute(object parameter)
+        {
+            if (parameter.ToString() == "Verwijderen")
+            {
+                if (Rechtbank == null || Rechtbank.RechtbankID <= 0)
+                {
+                    return false;
+                }
             }
+            return true;
         }
 
         public override void Execute(object parameter)

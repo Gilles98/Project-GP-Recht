@@ -9,5 +9,6 @@
     <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
         <Label FontSize="20" Margin="5" Content="Selecteer een rechtzaak en/of druk op een knop"/>
         <Label Margin="5" FontSize="14" Content="Je kan na het drukken op details en het selecteren van een rechtzaak de jury beheren"/>
+        <Label Margin="5" FontSize="14" Content="Enkel een rechtbank met een rechtzaak wordt weergegeven"/>
     </StackPanel>
 </UserControl>
