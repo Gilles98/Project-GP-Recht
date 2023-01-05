@@ -9,7 +9,7 @@ namespace Project_Recht.Service
 {
     public class Dialog: IDialog
     {
-        //om de messageboxes op te roepen
+        //to call messageboxes in my viewmodels but not break 
         public void ToonMessageBox(string bericht)
         {
             MessageBox.Show(bericht);
