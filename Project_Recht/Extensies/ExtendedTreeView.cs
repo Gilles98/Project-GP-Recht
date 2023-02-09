@@ -8,12 +8,13 @@ using System.Windows.Controls;
 
 namespace Project_Recht
 {
-    // op deze manier kan ik een treeview maken in de xaml waar er een optie is om een item te selecteren
-    //standaard lukte dit niet om deze te binden omdat er alleen maar via selectedvaluepath kon worden gewerkt
-    //omdat selecteditem en selectedvalue alleen een getter hadden en geen setter dus de selectedvaluepath
-    //was niet te gebruiken om een property van het type TreeViewItem op te vullen
-    //aangezien valuepath gaat zoeken naar iets en zo de selectedvalue zal instellen.
-    //deze klasse zorgt ervoor dat ik zelf een selecteditem kan binden naar mijn viewmodel
+    // this way I can create a treeview in the xaml where there is an option to select an item
+    //by default this could not be bound because it could only be done via selectedvaluepath
+    //because selecteditem and selectedvalue only had a getter and no setter so the selectedvaluepath
+    //could not be used to fill a property of type TreeViewItem
+    //because valuepath is going to search for something and so will set the selectedvalue.
+    //this class allows me to bind a selecteditem to my viewmodel and view myself
+
     public class ExtendedTreeView : TreeView
     {
         public ExtendedTreeView()
